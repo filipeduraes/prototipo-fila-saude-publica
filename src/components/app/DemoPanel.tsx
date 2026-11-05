@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Clapperboard, X, ListPlus, RefreshCw, BellRing, RotateCcw, Users, Smartphone, LayoutDashboard, Home, Building2 } from "lucide-react";
+import { Clapperboard, X, ListPlus, RefreshCw, BellRing, RotateCcw, Users, Smartphone, LayoutDashboard, Home } from "lucide-react";
 import { toast } from "sonner";
 import { useApp } from "@/store/app";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ export function DemoPanel() {
     toast.error("Novo alerta no painel: encaminhamento parado + pedido de ajuda");
   }
 
-  const go = (to: "/" | "/paciente" | "/whatsapp" | "/gestao" | "/gestao/ubs") => { setOpen(false); navigate({ to }); };
+  const go = (to: "/" | "/paciente" | "/whatsapp" | "/gestao") => { setOpen(false); navigate({ to }); };
 
   return (
     <div className="fixed bottom-24 right-4 z-50 md:bottom-6">
@@ -84,7 +84,6 @@ export function DemoPanel() {
             <Button size="sm" variant="secondary" onClick={() => go("/paciente")}><Users />Paciente</Button>
             <Button size="sm" variant="secondary" onClick={() => go("/whatsapp")}><Smartphone />WhatsApp</Button>
             <Button size="sm" variant="secondary" onClick={() => go("/gestao")}><LayoutDashboard />Secretaria</Button>
-            <Button size="sm" variant="secondary" className="col-span-2" onClick={() => go("/gestao/ubs")}><Building2 />Recepção da UBS</Button>
           </div>
         </div>
       )}

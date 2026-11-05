@@ -132,7 +132,13 @@ Para gerar a versão de produção, execute:
 npm run build
 ```
 
-Os arquivos compilados serão gerados no diretório `dist`.
+Os arquivos estáticos serão gerados no diretório `dist/client`.
+
+Para publicar no GitHub Pages, execute:
+
+```bash
+npm run deploy
+```
 
 Para verificar localmente a versão compilada, execute:
 
@@ -140,7 +146,7 @@ Para verificar localmente a versão compilada, execute:
 npm run preview
 ```
 
-O terminal informará o endereço local para acessar a versão de produção.
+Acesse o endereço informado pelo terminal seguido de `/prototipo-fila-saude-publica/`.
 
 ### Equipe
 

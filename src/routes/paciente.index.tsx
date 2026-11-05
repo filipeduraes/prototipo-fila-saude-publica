@@ -55,7 +55,7 @@ function Inicio() {
               <Button size="xl" variant="success" className="w-full" onClick={() => { confirmar(prox.id); toast.success("Presença confirmada! Até lá 💚"); }}><CheckCircle2 />Confirmar presença</Button>
             )}
             <AlertDialog>
-              <AlertDialogTrigger asChild><Button size="xl" variant="outline" className="w-full"><XCircle />Não vou poder ir</Button></AlertDialogTrigger>
+              <AlertDialogTrigger asChild><Button size="xl" variant="outline" className="w-full text-foreground"><XCircle />Não vou poder ir</Button></AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Liberar sua vaga?</AlertDialogTitle>

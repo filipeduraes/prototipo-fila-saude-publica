@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d .output/public",
+    "deploy": "gh-pages -d dist/client --nojekyll",
     "dev": "vite dev",
     "build": "vite build",
+    "postbuild": "node -e \"require('fs').copyFileSync('dist/client/index.html','dist/client/404.html')\"",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
