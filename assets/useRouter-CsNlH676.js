@@ -1,1 +1,0 @@
-import{D as e,T as t}from"./button-BywX4GxD.js";var n=e(t(),1),r=n.createContext(null);function i(e){return n.useContext(r)}export{r as n,i as t};

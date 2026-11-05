@@ -1,1 +1,0 @@
-import{C as e}from"./button-BywX4GxD.js";var t=e(`contrast`,[[`circle`,{cx:`12`,cy:`12`,r:`10`,key:`1mglay`}],[`path`,{d:`M12 18a6 6 0 0 0 0-12v12z`,key:`j4l70d`}]]),n=e(`type`,[[`path`,{d:`M12 4v16`,key:`1654pz`}],[`path`,{d:`M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2`,key:`e0r10z`}],[`path`,{d:`M9 20h6`,key:`s66wpe`}]]);export{t as n,n as t};
