@@ -1,1 +1,0 @@
-import{D as e,T as t}from"./button-BywX4GxD.js";import{a as n}from"./dist-BZMCO7HF.js";var r=e(t(),1),i=Object.defineProperty,a=(e,t)=>i(e,`name`,{value:t,configurable:!0}),o=r.useId||(()=>void 0),s=0;function c(e){let[t,i]=r.useState(o());return n(()=>{e||i(e=>e??String(s++))},[e]),e||(t?`radix-${t}`:``)}a(c,`useId`);export{c as t};
