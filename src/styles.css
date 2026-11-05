@@ -1,0 +1,188 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 6px);
+  --radius-lg: calc(var(--radius) - 4px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-deep: var(--primary-deep);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-wa-header: var(--wa-header);
+  --color-wa-header-foreground: var(--wa-header-foreground);
+  --color-wa-bg: var(--wa-bg);
+  --color-wa-out: var(--wa-out);
+  --color-wa-in: var(--wa-in);
+  --color-wa-tick: var(--wa-tick);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 1rem;
+  --background: oklch(0.98 0.004 250);
+  --foreground: oklch(0.27 0.03 235);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.27 0.03 235);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.27 0.03 235);
+  --primary: oklch(0.53 0.09 205);
+  --primary-foreground: oklch(0.99 0.005 200);
+  --primary-soft: oklch(0.95 0.03 200);
+  --primary-deep: oklch(0.36 0.07 210);
+  --secondary: oklch(0.95 0.03 160);
+  --secondary-foreground: oklch(0.38 0.09 158);
+  --muted: oklch(0.955 0.006 240);
+  --muted-foreground: oklch(0.47 0.025 235);
+  --accent: oklch(0.95 0.03 200);
+  --accent-foreground: oklch(0.36 0.07 210);
+  --destructive: oklch(0.55 0.18 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --destructive-soft: oklch(0.95 0.035 25);
+  --success: oklch(0.55 0.12 158);
+  --success-foreground: oklch(0.99 0 0);
+  --success-soft: oklch(0.95 0.04 158);
+  --warning: oklch(0.78 0.16 75);
+  --warning-foreground: oklch(0.3 0.06 60);
+  --warning-soft: oklch(0.96 0.05 85);
+  --info: oklch(0.52 0.13 250);
+  --info-soft: oklch(0.95 0.03 250);
+  --wa-header: oklch(0.42 0.08 175);
+  --wa-header-foreground: oklch(0.99 0 0);
+  --wa-bg: oklch(0.93 0.015 75);
+  --wa-out: oklch(0.94 0.08 135);
+  --wa-in: oklch(1 0 0);
+  --wa-tick: oklch(0.65 0.13 235);
+  --border: oklch(0.91 0.01 240);
+  --input: oklch(0.88 0.012 240);
+  --ring: oklch(0.53 0.09 205);
+  --chart-1: oklch(0.53 0.09 205);
+  --chart-2: oklch(0.6 0.13 158);
+  --chart-3: oklch(0.78 0.16 75);
+  --chart-4: oklch(0.58 0.18 25);
+  --chart-5: oklch(0.52 0.13 250);
+  --sidebar: oklch(0.3 0.05 215);
+  --sidebar-foreground: oklch(0.93 0.015 210);
+  --sidebar-primary: oklch(0.7 0.1 195);
+  --sidebar-primary-foreground: oklch(0.2 0.04 215);
+  --sidebar-accent: oklch(0.37 0.055 212);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.38 0.04 215);
+  --sidebar-ring: oklch(0.7 0.1 195);
+  --gradient-hero: radial-gradient(1200px 500px at 85% -10%, oklch(0.9 0.06 190 / 0.7), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, oklch(0.92 0.06 158 / 0.7), transparent 60%);
+  --gradient-primary: linear-gradient(135deg, var(--primary), oklch(0.6 0.12 165));
+  --shadow-soft: 0 1px 2px oklch(0.27 0.03 235 / 0.05), 0 8px 24px -12px oklch(0.27 0.03 235 / 0.15);
+  --shadow-lift: 0 20px 50px -20px oklch(0.36 0.07 210 / 0.35);
+}
+
+/* Alto contraste (portal do paciente) */
+.hc {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.1 0 0);
+  --card: oklch(1 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.2 0 0);
+  --primary: oklch(0.38 0.09 210);
+  --border: oklch(0.2 0 0);
+  --input: oklch(0.2 0 0);
+  --success: oklch(0.4 0.11 158);
+  --destructive: oklch(0.45 0.18 25);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+@utility bg-hero {
+  background-image: var(--gradient-hero);
+}
+@utility bg-brand {
+  background-image: var(--gradient-primary);
+}
+@utility portal-text {
+  font-size: 18px;
+  &.big {
+    font-size: 21px;
+  }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@utility animate-pop {
+  animation: pop 0.5s ease-out both;
+}
