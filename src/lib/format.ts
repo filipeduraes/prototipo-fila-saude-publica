@@ -6,7 +6,10 @@ export const onlyDigits = (s: string) => s.replace(/\D/g, "");
 export function maskDoc(v: string) {
   const d = onlyDigits(v).slice(0, 15);
   if (d.length <= 11) {
-    return d.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    return d
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   }
   return d.replace(/(\d{3})(\d{4})(\d{4})(\d{0,4})/, "$1 $2 $3 $4").trim();
 }
@@ -35,15 +38,21 @@ export function isValidPhone(v: string) {
   return d.length === 11 && Number(d.slice(0, 2)) >= 11 && d[2] === "9";
 }
 
-export const fmtData = (s: string) => format(s.length === 10 ? parseISO(s) : new Date(s), "dd/MM/yyyy");
+export const fmtData = (s: string) =>
+  format(s.length === 10 ? parseISO(s) : new Date(s), "dd/MM/yyyy");
 export const fmtDataHora = (s: string) => format(new Date(s), "dd/MM/yyyy 'às' HH:mm");
-export const fmtDiaSemana = (s: string) => format(parseISO(s), "EEEE, dd 'de' MMMM", { locale: ptBR });
-export const fmtRel = (s: string) => formatDistanceToNow(new Date(s), { locale: ptBR, addSuffix: true });
+export const fmtDiaSemana = (s: string) =>
+  format(parseISO(s), "EEEE, dd 'de' MMMM", { locale: ptBR });
+export const fmtRel = (s: string) =>
+  formatDistanceToNow(new Date(s), { locale: ptBR, addSuffix: true });
 export const fmtNum = (n: number) => n.toLocaleString("pt-BR");
-export const fmtBRL = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+export const fmtBRL = (n: number) =>
+  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export function mascararNome(nome: string) {
   const p = nome.split(" ");
-  return [p[0], ...p.slice(1).map((x) => (x.length <= 3 ? "" : x[0] + "."))].filter(Boolean).join(" ");
+  return [p[0], ...p.slice(1).map((x) => (x.length <= 3 ? "" : x[0] + "."))]
+    .filter(Boolean)
+    .join(" ");
 }
 export const primeiroNome = (nome: string) => nome.split(" ")[0];

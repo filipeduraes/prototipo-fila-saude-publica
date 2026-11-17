@@ -36,5 +36,10 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  // Componentes shadcn/ui (gerados/vendorizados): exportam variantes e hooks junto aos componentes.
+  {
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: { "react-refresh/only-export-components": "off" },
+  },
   eslintPluginPrettier,
 );

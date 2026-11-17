@@ -105,12 +105,12 @@ Para encerrar a aplicação, pressione `Ctrl + C` no terminal em que o servidor 
 
 As principais áreas podem ser acessadas pelas seguintes rotas:
 
-| Rota | Descrição |
-|---|---|
-| `/` | Página inicial e apresentação do projeto |
-| `/paciente` | Portal do paciente e do cuidador |
-| `/whatsapp` | Simulador de conversa por WhatsApp |
-| `/gestao` | Painel da Secretaria Municipal de Saúde |
+| Rota        | Descrição                                |
+| ----------- | ---------------------------------------- |
+| `/`         | Página inicial e apresentação do projeto |
+| `/paciente` | Portal do paciente e do cuidador         |
+| `/whatsapp` | Simulador de conversa por WhatsApp       |
+| `/gestao`   | Painel da Secretaria Municipal de Saúde  |
 
 As rotas internas de cada área permitem acessar funcionalidades específicas, como consultar vagas, acompanhar pedidos e visualizar informações sobre a gestão da fila.
 

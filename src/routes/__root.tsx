@@ -23,9 +23,14 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Página não encontrada</h2>
-        <p className="mt-2 text-sm text-muted-foreground">O endereço que você procurou não existe ou mudou.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          O endereço que você procurou não existe ou mudou.
+        </p>
         <div className="mt-6">
-          <Link to="/" className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
             Voltar ao início
           </Link>
         </div>
@@ -44,8 +49,12 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Esta página não carregou</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Algo deu errado. Tente novamente ou volte ao início.</p>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          Esta página não carregou
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Algo deu errado. Tente novamente ou volte ao início.
+        </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -56,7 +65,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           >
             Tentar novamente
           </button>
-          <a href={import.meta.env.BASE_URL} className="inline-flex items-center justify-center rounded-xl border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent">
+          <a
+            href={import.meta.env.BASE_URL}
+            className="inline-flex items-center justify-center rounded-xl border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+          >
             Início
           </a>
         </div>
@@ -72,7 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: `${APP.nome} — Mais agilidade e transparência no atendimento do SUS` },
       { name: "description", content: APP.proposta },
-      { property: "og:title", content: `${APP.nome} — Mais agilidade e transparência no atendimento do SUS` },
+      {
+        property: "og:title",
+        content: `${APP.nome} — Mais agilidade e transparência no atendimento do SUS`,
+      },
       { property: "og:description", content: APP.proposta },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -80,7 +95,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap",
+      },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: `${import.meta.env.BASE_URL}favicon.ico`, type: "image/x-icon" },
     ],

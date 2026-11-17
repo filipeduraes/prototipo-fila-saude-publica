@@ -14,21 +14,99 @@ export type StatusConf =
   | "compareceu"
   | "falta";
 
-export interface UBS { id: string; nome: string; bairro: string; horario: string; distancia: string; telefone: string; ceps: string[]; bairros: string[] }
-export interface Servico { id: string; nome: string; tipo: "consulta" | "exame" | "procedimento"; especialidade: boolean; agendamentoDireto: boolean }
-export interface Oferta { ubsId: string; servicoId: string; cotaDia: number; ocupadasHoje: number; cotaSemana: number; ocupadasSemana: number; profissional: string }
-export interface Paciente { id: string; nome: string; idade: number; cns: string; telefone: string; bairro: string; cep: string; endereco: string; canal: Canal; cuidadorDeIds?: string[]; parentesco?: string }
-export interface Agendamento { data: string; hora: string; ubsId: string; status: StatusConf; redistribuidaPara?: string }
-export interface Historico { etapa: Etapa; data: string; responsavel: string; nota?: string }
-export interface Encaminhamento {
-  id: string; protocolo: string; pacienteId: string; servicoId: string; ubsOrigemId: string;
-  etapaAtual: Etapa; prioridade: Prioridade; posicaoFila?: number; criadoEm: string;
-  historico: Historico[]; prazoExcedido: boolean; agendamento?: Agendamento; observacao?: string;
-  cancelado?: boolean; ajudaPedida?: boolean;
+export interface UBS {
+  id: string;
+  nome: string;
+  bairro: string;
+  horario: string;
+  distancia: string;
+  telefone: string;
+  ceps: string[];
+  bairros: string[];
 }
-export interface Notificacao { id: string; pacienteId: string; tipo: "vaga" | "autorizado" | "agendado" | "lembrete" | "confirmacao" | "remarcado" | "info"; titulo: string; texto: string; data: string; lida: boolean }
-export interface Alerta { id: string; tipo: "parado" | "ajuda" | "ubs" | "integracao"; severidade: "alta" | "media" | "baixa"; titulo: string; descricao: string; data: string; resolvido: boolean; encId?: string }
-export interface Atividade { id: string; texto: string; data: string }
+export interface Servico {
+  id: string;
+  nome: string;
+  tipo: "consulta" | "exame" | "procedimento";
+  especialidade: boolean;
+  agendamentoDireto: boolean;
+}
+export interface Oferta {
+  ubsId: string;
+  servicoId: string;
+  cotaDia: number;
+  ocupadasHoje: number;
+  cotaSemana: number;
+  ocupadasSemana: number;
+  profissional: string;
+}
+export interface Paciente {
+  id: string;
+  nome: string;
+  idade: number;
+  cns: string;
+  telefone: string;
+  bairro: string;
+  cep: string;
+  endereco: string;
+  canal: Canal;
+  cuidadorDeIds?: string[];
+  parentesco?: string;
+}
+export interface Agendamento {
+  data: string;
+  hora: string;
+  ubsId: string;
+  status: StatusConf;
+  redistribuidaPara?: string;
+}
+export interface Historico {
+  etapa: Etapa;
+  data: string;
+  responsavel: string;
+  nota?: string;
+}
+export interface Encaminhamento {
+  id: string;
+  protocolo: string;
+  pacienteId: string;
+  servicoId: string;
+  ubsOrigemId: string;
+  etapaAtual: Etapa;
+  prioridade: Prioridade;
+  posicaoFila?: number;
+  criadoEm: string;
+  historico: Historico[];
+  prazoExcedido: boolean;
+  agendamento?: Agendamento;
+  observacao?: string;
+  cancelado?: boolean;
+  ajudaPedida?: boolean;
+}
+export interface Notificacao {
+  id: string;
+  pacienteId: string;
+  tipo: "vaga" | "autorizado" | "agendado" | "lembrete" | "confirmacao" | "remarcado" | "info";
+  titulo: string;
+  texto: string;
+  data: string;
+  lida: boolean;
+}
+export interface Alerta {
+  id: string;
+  tipo: "parado" | "ajuda" | "ubs" | "integracao";
+  severidade: "alta" | "media" | "baixa";
+  titulo: string;
+  descricao: string;
+  data: string;
+  resolvido: boolean;
+  encId?: string;
+}
+export interface Atividade {
+  id: string;
+  texto: string;
+  data: string;
+}
 
 export const ETAPAS: Etapa[] = ["solicitado", "em_analise", "autorizado", "agendado", "realizado"];
 export const ETAPA_LABEL: Record<Etapa, string> = {
@@ -39,34 +117,151 @@ export const ETAPA_LABEL: Record<Etapa, string> = {
   realizado: "Realizado",
 };
 export const ETAPA_FRASE: Record<Etapa, string> = {
-  solicitado: "Seu pedido foi feito na UBS e vai seguir para a central de vagas. Normalmente leva até 3 dias.",
+  solicitado:
+    "Seu pedido foi feito na UBS e vai seguir para a central de vagas. Normalmente leva até 3 dias.",
   em_analise: "Seu pedido está sendo analisado pela central de vagas. Normalmente leva até 5 dias.",
-  autorizado: "Seu pedido foi aprovado. O agendamento será feito pela equipe da UBS/Central de Vagas. Normalmente leva até 7 dias.",
+  autorizado:
+    "Seu pedido foi aprovado. O agendamento será feito pela equipe da UBS/Central de Vagas. Normalmente leva até 7 dias.",
   agendado: "Sua consulta está marcada. Confirme sua presença quando receber o aviso.",
   realizado: "Atendimento concluído. Se precisar de retorno, a UBS vai avisar.",
 };
-export const PRAZO_ETAPA: Record<Etapa, number> = { solicitado: 3, em_analise: 5, autorizado: 7, agendado: 60, realizado: 999 };
-export const PRIORIDADE_LABEL: Record<Prioridade, string> = { vermelho: "Vermelho · urgente", amarelo: "Amarelo · prioritário", verde: "Verde · pouco urgente", azul: "Azul · eletivo" };
-export const PRIORIDADE_PESO: Record<Prioridade, number> = { vermelho: 0, amarelo: 1, verde: 2, azul: 3 };
+export const PRAZO_ETAPA: Record<Etapa, number> = {
+  solicitado: 3,
+  em_analise: 5,
+  autorizado: 7,
+  agendado: 60,
+  realizado: 999,
+};
+export const PRIORIDADE_LABEL: Record<Prioridade, string> = {
+  vermelho: "Vermelho · urgente",
+  amarelo: "Amarelo · prioritário",
+  verde: "Verde · pouco urgente",
+  azul: "Azul · eletivo",
+};
+export const PRIORIDADE_PESO: Record<Prioridade, number> = {
+  vermelho: 0,
+  amarelo: 1,
+  verde: 2,
+  azul: 3,
+};
 
 export const UBS_LIST: UBS[] = [
-  { id: "centro", nome: "UBS Centro", bairro: "Centro", horario: "07h às 19h", distancia: "1,2 km", telefone: "(38) 3531-0001", ceps: ["39300", "39304"], bairros: ["Centro"] },
-  { id: "bomjesus", nome: "UBS Bom Jesus", bairro: "Bom Jesus", horario: "07h às 17h", distancia: "2,8 km", telefone: "(38) 3531-0002", ceps: ["39301"], bairros: ["Bom Jesus"] },
-  { id: "riogrande", nome: "UBS Rio Grande", bairro: "Rio Grande", horario: "07h às 17h", distancia: "3,5 km", telefone: "(38) 3531-0003", ceps: ["39302"], bairros: ["Rio Grande"] },
-  { id: "palha", nome: "UBS Palha", bairro: "Palha", horario: "07h às 16h", distancia: "4,1 km", telefone: "(38) 3531-0004", ceps: ["39303"], bairros: ["Palha"] },
-  { id: "vila", nome: "UBS Vila Operária", bairro: "Vila Operária", horario: "07h às 17h", distancia: "2,2 km", telefone: "(38) 3531-0005", ceps: ["39305"], bairros: ["Vila Operária"] },
+  {
+    id: "centro",
+    nome: "UBS Centro",
+    bairro: "Centro",
+    horario: "07h às 19h",
+    distancia: "1,2 km",
+    telefone: "(38) 3531-0001",
+    ceps: ["39300", "39304"],
+    bairros: ["Centro"],
+  },
+  {
+    id: "bomjesus",
+    nome: "UBS Bom Jesus",
+    bairro: "Bom Jesus",
+    horario: "07h às 17h",
+    distancia: "2,8 km",
+    telefone: "(38) 3531-0002",
+    ceps: ["39301"],
+    bairros: ["Bom Jesus"],
+  },
+  {
+    id: "riogrande",
+    nome: "UBS Rio Grande",
+    bairro: "Rio Grande",
+    horario: "07h às 17h",
+    distancia: "3,5 km",
+    telefone: "(38) 3531-0003",
+    ceps: ["39302"],
+    bairros: ["Rio Grande"],
+  },
+  {
+    id: "palha",
+    nome: "UBS Palha",
+    bairro: "Palha",
+    horario: "07h às 16h",
+    distancia: "4,1 km",
+    telefone: "(38) 3531-0004",
+    ceps: ["39303"],
+    bairros: ["Palha"],
+  },
+  {
+    id: "vila",
+    nome: "UBS Vila Operária",
+    bairro: "Vila Operária",
+    horario: "07h às 17h",
+    distancia: "2,2 km",
+    telefone: "(38) 3531-0005",
+    ceps: ["39305"],
+    bairros: ["Vila Operária"],
+  },
 ];
 
 export const SERVICOS: Servico[] = [
-  { id: "clinico", nome: "Clínico Geral", tipo: "consulta", especialidade: false, agendamentoDireto: true },
-  { id: "pediatria", nome: "Pediatria", tipo: "consulta", especialidade: false, agendamentoDireto: false },
-  { id: "gineco", nome: "Ginecologia", tipo: "consulta", especialidade: false, agendamentoDireto: false },
-  { id: "odonto", nome: "Odontologia", tipo: "consulta", especialidade: false, agendamentoDireto: false },
-  { id: "cardio", nome: "Cardiologia", tipo: "consulta", especialidade: true, agendamentoDireto: false },
-  { id: "orto", nome: "Ortopedia", tipo: "consulta", especialidade: true, agendamentoDireto: false },
-  { id: "oftalmo", nome: "Oftalmologia", tipo: "consulta", especialidade: true, agendamentoDireto: false },
-  { id: "usg", nome: "Ultrassonografia", tipo: "exame", especialidade: true, agendamentoDireto: false },
-  { id: "sangue", nome: "Exames de sangue", tipo: "exame", especialidade: false, agendamentoDireto: false },
+  {
+    id: "clinico",
+    nome: "Clínico Geral",
+    tipo: "consulta",
+    especialidade: false,
+    agendamentoDireto: true,
+  },
+  {
+    id: "pediatria",
+    nome: "Pediatria",
+    tipo: "consulta",
+    especialidade: false,
+    agendamentoDireto: false,
+  },
+  {
+    id: "gineco",
+    nome: "Ginecologia",
+    tipo: "consulta",
+    especialidade: false,
+    agendamentoDireto: false,
+  },
+  {
+    id: "odonto",
+    nome: "Odontologia",
+    tipo: "consulta",
+    especialidade: false,
+    agendamentoDireto: false,
+  },
+  {
+    id: "cardio",
+    nome: "Cardiologia",
+    tipo: "consulta",
+    especialidade: true,
+    agendamentoDireto: false,
+  },
+  {
+    id: "orto",
+    nome: "Ortopedia",
+    tipo: "consulta",
+    especialidade: true,
+    agendamentoDireto: false,
+  },
+  {
+    id: "oftalmo",
+    nome: "Oftalmologia",
+    tipo: "consulta",
+    especialidade: true,
+    agendamentoDireto: false,
+  },
+  {
+    id: "usg",
+    nome: "Ultrassonografia",
+    tipo: "exame",
+    especialidade: true,
+    agendamentoDireto: false,
+  },
+  {
+    id: "sangue",
+    nome: "Exames de sangue",
+    tipo: "exame",
+    especialidade: false,
+    agendamentoDireto: false,
+  },
 ];
 
 export const SERVICO_AGENDAMENTO_DIRETO = "clinico";
@@ -86,19 +281,81 @@ export const ubsDeReferencia = (p: Paciente): UBS => {
   return UBS_LIST.find((u) => u.bairros.includes(p.bairro)) ?? UBS_LIST[0];
 };
 
-const PROFISSIONAIS = ["Dra. Helena Costa", "Dr. Marcos Pereira", "Dra. Luiza Fernandes", "Dr. Rafael Nunes", "Dra. Beatriz Lima", "Dr. Tiago Moreira"];
+const PROFISSIONAIS = [
+  "Dra. Helena Costa",
+  "Dr. Marcos Pereira",
+  "Dra. Luiza Fernandes",
+  "Dr. Rafael Nunes",
+  "Dra. Beatriz Lima",
+  "Dr. Tiago Moreira",
+];
 
 function rng(seed: number) {
   return () => {
-    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
     let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
 
-const NOMES = ["José", "Ana", "João", "Francisca", "Antônio", "Luzia", "Sebastião", "Rosa", "Geraldo", "Terezinha", "Paulo", "Joana", "Raimundo", "Lúcia", "Pedro", "Marta", "Benedito", "Helena", "Lucas", "Vitória", "Rafael", "Juliana", "Marcos", "Patrícia", "Edson", "Cláudia", "Wellington", "Sônia", "Diego", "Aline", "Rogério", "Fernanda", "Gabriel", "Regina", "Matheus", "Simone", "Vinícius"];
-const SOBRENOMES = ["Souza", "Ferreira", "Rodrigues", "Pereira", "Costa", "Gomes", "Martins", "Ribeiro", "Lopes", "Mendes", "Batista", "Moreira", "Teixeira", "Barbosa", "Rocha"];
+const NOMES = [
+  "José",
+  "Ana",
+  "João",
+  "Francisca",
+  "Antônio",
+  "Luzia",
+  "Sebastião",
+  "Rosa",
+  "Geraldo",
+  "Terezinha",
+  "Paulo",
+  "Joana",
+  "Raimundo",
+  "Lúcia",
+  "Pedro",
+  "Marta",
+  "Benedito",
+  "Helena",
+  "Lucas",
+  "Vitória",
+  "Rafael",
+  "Juliana",
+  "Marcos",
+  "Patrícia",
+  "Edson",
+  "Cláudia",
+  "Wellington",
+  "Sônia",
+  "Diego",
+  "Aline",
+  "Rogério",
+  "Fernanda",
+  "Gabriel",
+  "Regina",
+  "Matheus",
+  "Simone",
+  "Vinícius",
+];
+const SOBRENOMES = [
+  "Souza",
+  "Ferreira",
+  "Rodrigues",
+  "Pereira",
+  "Costa",
+  "Gomes",
+  "Martins",
+  "Ribeiro",
+  "Lopes",
+  "Mendes",
+  "Batista",
+  "Moreira",
+  "Teixeira",
+  "Barbosa",
+  "Rocha",
+];
 
 export const iso = (d: Date) => d.toISOString();
 export const dia = (d: Date) => format(d, "yyyy-MM-dd");
@@ -130,7 +387,13 @@ function responsavel(etapa: Etapa, ubsId: string, r: () => number) {
   return `Atendido por ${prof}`;
 }
 
-export function buildHistorico(etapa: Etapa, ubsId: string, criado: Date, r: () => number, spanDias: number[]): Historico[] {
+export function buildHistorico(
+  etapa: Etapa,
+  ubsId: string,
+  criado: Date,
+  r: () => number,
+  spanDias: number[],
+): Historico[] {
   const idx = ETAPAS.indexOf(etapa);
   const h: Historico[] = [];
   let d = criado;
@@ -144,14 +407,54 @@ export function buildHistorico(etapa: Etapa, ubsId: string, criado: Date, r: () 
 export function gerarDados(): DadosDemo {
   const r = rng(42);
   const now = new Date();
-  const pick = <T,>(a: T[]) => a[Math.floor(r() * a.length)];
+  const pick = <T>(a: T[]) => a[Math.floor(r() * a.length)];
   const pacientes: Paciente[] = [
-    { id: "p1", nome: "Maria das Graças Silva", idade: 53, cns: "700 0012 3456 7801", telefone: "(38) 99812-3401", bairro: "Centro", cep: "39300-120", endereco: "Rua da Quitanda, 128 — Centro", canal: "whatsapp" },
-    { id: "p2", nome: "Carlos Almeida", idade: 41, cns: "700 0098 7654 3202", telefone: "(38) 99745-1102", bairro: "Bom Jesus", cep: "39301-080", endereco: "Av. Bernardo de Abranches, 450 — Bom Jesus", canal: "whatsapp", cuidadorDeIds: ["p3"] },
-    { id: "p3", nome: "Aparecida Almeida", idade: 78, cns: "700 0055 1122 3303", telefone: "(38) 99745-1102", bairro: "Bom Jesus", cep: "39301-080", endereco: "Av. Bernardo de Abranches, 450 — Bom Jesus", canal: "whatsapp", parentesco: "Mãe" },
+    {
+      id: "p1",
+      nome: "Maria das Graças Silva",
+      idade: 53,
+      cns: "700 0012 3456 7801",
+      telefone: "(38) 99812-3401",
+      bairro: "Centro",
+      cep: "39300-120",
+      endereco: "Rua da Quitanda, 128 — Centro",
+      canal: "whatsapp",
+    },
+    {
+      id: "p2",
+      nome: "Carlos Almeida",
+      idade: 41,
+      cns: "700 0098 7654 3202",
+      telefone: "(38) 99745-1102",
+      bairro: "Bom Jesus",
+      cep: "39301-080",
+      endereco: "Av. Bernardo de Abranches, 450 — Bom Jesus",
+      canal: "whatsapp",
+      cuidadorDeIds: ["p3"],
+    },
+    {
+      id: "p3",
+      nome: "Aparecida Almeida",
+      idade: 78,
+      cns: "700 0055 1122 3303",
+      telefone: "(38) 99745-1102",
+      bairro: "Bom Jesus",
+      cep: "39301-080",
+      endereco: "Av. Bernardo de Abranches, 450 — Bom Jesus",
+      canal: "whatsapp",
+      parentesco: "Mãe",
+    },
   ];
-  const RUAS = ["Rua Direita", "Rua Macau de Baixo", "Rua da Quitanda", "Av. da Torre", "Rua Senhor do Bonfim", "Rua do Rosário"];
-  const cepDaUbs = (ubsId: string) => `${UBS_LIST.find((u) => u.id === ubsId)?.ceps[0] ?? "39300"}-${String(100 + Math.floor(r() * 899))}`;
+  const RUAS = [
+    "Rua Direita",
+    "Rua Macau de Baixo",
+    "Rua da Quitanda",
+    "Av. da Torre",
+    "Rua Senhor do Bonfim",
+    "Rua do Rosário",
+  ];
+  const cepDaUbs = (ubsId: string) =>
+    `${UBS_LIST.find((u) => u.id === ubsId)?.ceps[0] ?? "39300"}-${String(100 + Math.floor(r() * 899))}`;
   for (let i = 4; i <= 40; i++) {
     const bairro = pick(UBS_LIST).bairro;
     const ubsGerada = UBS_LIST.find((u) => u.bairros.includes(bairro)) ?? UBS_LIST[0];
@@ -170,7 +473,17 @@ export function gerarDados(): DadosDemo {
 
   const encs: Encaminhamento[] = [];
   let seq = 4700;
-  const mk = (p: Partial<Encaminhamento> & { pacienteId: string; servicoId: string; etapaAtual: Etapa; criado: Date; spans?: number[]; ubs?: string; prioridade?: Prioridade }) => {
+  const mk = (
+    p: Partial<Encaminhamento> & {
+      pacienteId: string;
+      servicoId: string;
+      etapaAtual: Etapa;
+      criado: Date;
+      spans?: number[];
+      ubs?: string;
+      prioridade?: Prioridade;
+    },
+  ) => {
     const ubs = p.ubs ?? pacientes.find((x) => x.id === p.pacienteId)!.bairro;
     const ubsId = UBS_LIST.find((u) => u.bairro === ubs)?.id ?? p.ubs ?? "centro";
     const e: Encaminhamento = {
@@ -180,9 +493,26 @@ export function gerarDados(): DadosDemo {
       servicoId: p.servicoId,
       ubsOrigemId: ubsId,
       etapaAtual: p.etapaAtual,
-      prioridade: p.prioridade ?? (pick(["vermelho", "amarelo", "amarelo", "verde", "verde", "verde", "azul", "azul"]) as Prioridade),
+      prioridade:
+        p.prioridade ??
+        (pick([
+          "vermelho",
+          "amarelo",
+          "amarelo",
+          "verde",
+          "verde",
+          "verde",
+          "azul",
+          "azul",
+        ]) as Prioridade),
       criadoEm: iso(p.criado),
-      historico: buildHistorico(p.etapaAtual, ubsId, p.criado, r, p.spans ?? [1 + Math.floor(r() * 4), 2 + Math.floor(r() * 5), 2 + Math.floor(r() * 6), 7]),
+      historico: buildHistorico(
+        p.etapaAtual,
+        ubsId,
+        p.criado,
+        r,
+        p.spans ?? [1 + Math.floor(r() * 4), 2 + Math.floor(r() * 5), 2 + Math.floor(r() * 6), 7],
+      ),
       prazoExcedido: false,
       agendamento: p.agendamento,
       observacao: p.observacao,
@@ -192,18 +522,91 @@ export function gerarDados(): DadosDemo {
   };
 
   // Maria
-  mk({ pacienteId: "p1", servicoId: "cardio", etapaAtual: "autorizado", criado: subDays(now, 12), spans: [6, 4], prioridade: "amarelo", ubs: "Centro", observacao: "Hipertensão de difícil controle." });
-  mk({ pacienteId: "p1", servicoId: "usg", etapaAtual: "em_analise", criado: subDays(now, 4), spans: [2], prioridade: "verde", ubs: "Centro" });
-  mk({ pacienteId: "p1", servicoId: "clinico", etapaAtual: "agendado", criado: subDays(now, 6), spans: [0, 1, 2], prioridade: "verde", ubs: "Centro",
-    agendamento: { data: dia(addDays(now, 1)), hora: "14:00", ubsId: "centro", status: "pendente" } });
+  mk({
+    pacienteId: "p1",
+    servicoId: "cardio",
+    etapaAtual: "autorizado",
+    criado: subDays(now, 12),
+    spans: [6, 4],
+    prioridade: "amarelo",
+    ubs: "Centro",
+    observacao: "Hipertensão de difícil controle.",
+  });
+  mk({
+    pacienteId: "p1",
+    servicoId: "usg",
+    etapaAtual: "em_analise",
+    criado: subDays(now, 4),
+    spans: [2],
+    prioridade: "verde",
+    ubs: "Centro",
+  });
+  mk({
+    pacienteId: "p1",
+    servicoId: "clinico",
+    etapaAtual: "agendado",
+    criado: subDays(now, 6),
+    spans: [0, 1, 2],
+    prioridade: "verde",
+    ubs: "Centro",
+    agendamento: { data: dia(addDays(now, 1)), hora: "14:00", ubsId: "centro", status: "pendente" },
+  });
   // Aparecida (Carlos)
-  mk({ pacienteId: "p3", servicoId: "oftalmo", etapaAtual: "solicitado", criado: subDays(now, 9), prioridade: "amarelo", ubs: "Bom Jesus", observacao: "Catarata bilateral, dificuldade visual progressiva." });
-  mk({ pacienteId: "p3", servicoId: "cardio", etapaAtual: "agendado", criado: subDays(now, 20), spans: [3, 5, 4], prioridade: "amarelo", ubs: "Bom Jesus",
-    agendamento: { data: dia(addDays(now, 5)), hora: "09:30", ubsId: "centro", status: "confirmada" } });
+  mk({
+    pacienteId: "p3",
+    servicoId: "oftalmo",
+    etapaAtual: "solicitado",
+    criado: subDays(now, 9),
+    prioridade: "amarelo",
+    ubs: "Bom Jesus",
+    observacao: "Catarata bilateral, dificuldade visual progressiva.",
+  });
+  mk({
+    pacienteId: "p3",
+    servicoId: "cardio",
+    etapaAtual: "agendado",
+    criado: subDays(now, 20),
+    spans: [3, 5, 4],
+    prioridade: "amarelo",
+    ubs: "Bom Jesus",
+    agendamento: {
+      data: dia(addDays(now, 5)),
+      hora: "09:30",
+      ubsId: "centro",
+      status: "confirmada",
+    },
+  });
 
-  const etapasPeso: Etapa[] = ["solicitado", "em_analise", "em_analise", "autorizado", "autorizado", "agendado", "agendado", "realizado"];
-  const horas = ["07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "13:30", "14:00", "15:00", "16:00"];
-  const confs: StatusConf[] = ["confirmada", "confirmada", "pendente", "pendente", "sem_resposta", "cancelada"];
+  const etapasPeso: Etapa[] = [
+    "solicitado",
+    "em_analise",
+    "em_analise",
+    "autorizado",
+    "autorizado",
+    "agendado",
+    "agendado",
+    "realizado",
+  ];
+  const horas = [
+    "07:30",
+    "08:00",
+    "08:30",
+    "09:00",
+    "09:30",
+    "10:00",
+    "13:30",
+    "14:00",
+    "15:00",
+    "16:00",
+  ];
+  const confs: StatusConf[] = [
+    "confirmada",
+    "confirmada",
+    "pendente",
+    "pendente",
+    "sem_resposta",
+    "cancelada",
+  ];
   let ag48 = 0;
   while (encs.length < 120) {
     const etapa = pick(etapasPeso);
@@ -213,12 +616,28 @@ export function gerarDados(): DadosDemo {
     let agendamento: Agendamento | undefined;
     if (etapa === "agendado") {
       const near = ag48 < 12;
-      const offset = near ? (ag48 % 2) : 3 + Math.floor(r() * 11);
+      const offset = near ? ag48 % 2 : 3 + Math.floor(r() * 11);
       ag48++;
-      agendamento = { data: dia(addDays(now, offset)), hora: pick(horas), ubsId: SERVICOS.find((s) => s.id === servico)!.especialidade ? "centro" : UBS_LIST.find((u) => u.bairro === paciente.bairro)!.id, status: near ? pick(confs) : "pendente" };
+      agendamento = {
+        data: dia(addDays(now, offset)),
+        hora: pick(horas),
+        ubsId: SERVICOS.find((s) => s.id === servico)!.especialidade
+          ? "centro"
+          : UBS_LIST.find((u) => u.bairro === paciente.bairro)!.id,
+        status: near ? pick(confs) : "pendente",
+      };
     }
-    mk({ pacienteId: paciente.id, servicoId: servico, etapaAtual: etapa, criado: subDays(now, idadeDias), agendamento,
-      spans: etapa === "agendado" || etapa === "realizado" ? [1, 2, Math.max(1, idadeDias - 5), 3] : undefined });
+    mk({
+      pacienteId: paciente.id,
+      servicoId: servico,
+      etapaAtual: etapa,
+      criado: subDays(now, idadeDias),
+      agendamento,
+      spans:
+        etapa === "agendado" || etapa === "realizado"
+          ? [1, 2, Math.max(1, idadeDias - 5), 3]
+          : undefined,
+    });
   }
   // fix future dates on historico (cap at now)
   for (const e of encs) {
@@ -233,52 +652,183 @@ export function gerarDados(): DadosDemo {
       if (s.especialidade && !["centro", "bomjesus"].includes(u.id)) continue;
       const cota = s.especialidade ? 4 + Math.floor(r() * 4) : 10 + Math.floor(r() * 10);
       const roll = r();
-      const ocup = roll < 0.3 ? cota : roll < 0.55 ? cota - 1 - Math.floor(r() * 2) : Math.floor(cota * r() * 0.6);
-      ofertas.push({ ubsId: u.id, servicoId: s.id, cotaDia: cota, ocupadasHoje: Math.max(0, ocup), cotaSemana: cota * 5, ocupadasSemana: Math.min(cota * 5, ocup + Math.floor(cota * 3 * r())), profissional: pick(PROFISSIONAIS) });
+      const ocup =
+        roll < 0.3
+          ? cota
+          : roll < 0.55
+            ? cota - 1 - Math.floor(r() * 2)
+            : Math.floor(cota * r() * 0.6);
+      ofertas.push({
+        ubsId: u.id,
+        servicoId: s.id,
+        cotaDia: cota,
+        ocupadasHoje: Math.max(0, ocup),
+        cotaSemana: cota * 5,
+        ocupadasSemana: Math.min(cota * 5, ocup + Math.floor(cota * 3 * r())),
+        profissional: pick(PROFISSIONAIS),
+      });
     }
   }
   // garantir oftalmo esgotado (demanda reprimida)
-  ofertas.filter((o) => o.servicoId === "oftalmo").forEach((o) => { o.ocupadasHoje = o.cotaDia; o.ocupadasSemana = o.cotaSemana; });
+  ofertas
+    .filter((o) => o.servicoId === "oftalmo")
+    .forEach((o) => {
+      o.ocupadasHoje = o.cotaDia;
+      o.ocupadasSemana = o.cotaSemana;
+    });
 
   const h = (hAgo: number) => iso(new Date(now.getTime() - hAgo * 3600000));
   const notificacoes: Notificacao[] = [
-    { id: "n1", pacienteId: "p1", tipo: "autorizado", titulo: "Pedido autorizado ✅", texto: "Sua consulta de Cardiologia foi autorizada. Falta agendar.", data: h(5), lida: false },
-    { id: "n2", pacienteId: "p1", tipo: "confirmacao", titulo: "Confirme sua presença", texto: "Consulta de Clínico Geral amanhã às 14:00 na UBS Centro.", data: h(2), lida: false },
-    { id: "n3", pacienteId: "p1", tipo: "agendado", titulo: "Consulta agendada 🗓️", texto: "Clínico Geral marcado na UBS Centro.", data: h(30), lida: true },
-    { id: "n4", pacienteId: "p1", tipo: "info", titulo: "Pedido em análise", texto: "Seu Ultrassom está com a central de vagas.", data: h(60), lida: true },
-    { id: "n5", pacienteId: "p3", tipo: "lembrete", titulo: "Lembrete de consulta", texto: "Cardiologia de Dona Aparecida em 5 dias, 09:30, UBS Centro.", data: h(8), lida: false },
-    { id: "n6", pacienteId: "p3", tipo: "info", titulo: "Pedido demorando", texto: "O pedido de Oftalmologia passou do prazo normal. Já avisamos a Secretaria.", data: h(20), lida: false },
-    { id: "n7", pacienteId: "p3", tipo: "remarcado", titulo: "Consulta remarcada", texto: "A consulta de Cardiologia mudou de horário para 09:30.", data: h(70), lida: true },
+    {
+      id: "n1",
+      pacienteId: "p1",
+      tipo: "autorizado",
+      titulo: "Pedido autorizado ✅",
+      texto: "Sua consulta de Cardiologia foi autorizada. Falta agendar.",
+      data: h(5),
+      lida: false,
+    },
+    {
+      id: "n2",
+      pacienteId: "p1",
+      tipo: "confirmacao",
+      titulo: "Confirme sua presença",
+      texto: "Consulta de Clínico Geral amanhã às 14:00 na UBS Centro.",
+      data: h(2),
+      lida: false,
+    },
+    {
+      id: "n3",
+      pacienteId: "p1",
+      tipo: "agendado",
+      titulo: "Consulta agendada 🗓️",
+      texto: "Clínico Geral marcado na UBS Centro.",
+      data: h(30),
+      lida: true,
+    },
+    {
+      id: "n4",
+      pacienteId: "p1",
+      tipo: "info",
+      titulo: "Pedido em análise",
+      texto: "Seu Ultrassom está com a central de vagas.",
+      data: h(60),
+      lida: true,
+    },
+    {
+      id: "n5",
+      pacienteId: "p3",
+      tipo: "lembrete",
+      titulo: "Lembrete de consulta",
+      texto: "Cardiologia de Dona Aparecida em 5 dias, 09:30, UBS Centro.",
+      data: h(8),
+      lida: false,
+    },
+    {
+      id: "n6",
+      pacienteId: "p3",
+      tipo: "info",
+      titulo: "Pedido demorando",
+      texto: "O pedido de Oftalmologia passou do prazo normal. Já avisamos a Secretaria.",
+      data: h(20),
+      lida: false,
+    },
+    {
+      id: "n7",
+      pacienteId: "p3",
+      tipo: "remarcado",
+      titulo: "Consulta remarcada",
+      texto: "A consulta de Cardiologia mudou de horário para 09:30.",
+      data: h(70),
+      lida: true,
+    },
   ];
   const alertas: Alerta[] = [
-    { id: "a1", tipo: "parado", severidade: "alta", titulo: "Oftalmologia parada há 9 dias", descricao: "Pedido FZ-2026-004703 (Aparecida A.) está em 'Solicitado' acima do prazo de 3 dias.", data: h(3), resolvido: false, encId: "e4" },
-    { id: "a2", tipo: "ubs", severidade: "media", titulo: "UBS Bom Jesus acima do limite", descricao: "Fila de Clínico Geral 40% acima da média dos últimos 30 dias.", data: h(6), resolvido: false },
-    { id: "a3", tipo: "integracao", severidade: "baixa", titulo: "Atraso na sincronização com o e-SUS Regulação", descricao: "Última sincronização levou 4 min (normal: 30 s). Restabelecida automaticamente.", data: h(14), resolvido: false },
-    { id: "a4", tipo: "ajuda", severidade: "media", titulo: "Pedido de ajuda de paciente", descricao: "José F. pediu ajuda sobre um encaminhamento de Ortopedia.", data: h(26), resolvido: false },
+    {
+      id: "a1",
+      tipo: "parado",
+      severidade: "alta",
+      titulo: "Oftalmologia parada há 9 dias",
+      descricao:
+        "Pedido FZ-2026-004703 (Aparecida A.) está em 'Solicitado' acima do prazo de 3 dias.",
+      data: h(3),
+      resolvido: false,
+      encId: "e4",
+    },
+    {
+      id: "a2",
+      tipo: "ubs",
+      severidade: "media",
+      titulo: "UBS Bom Jesus acima do limite",
+      descricao: "Fila de Clínico Geral 40% acima da média dos últimos 30 dias.",
+      data: h(6),
+      resolvido: false,
+    },
+    {
+      id: "a3",
+      tipo: "integracao",
+      severidade: "baixa",
+      titulo: "Atraso na sincronização com o e-SUS Regulação",
+      descricao: "Última sincronização levou 4 min (normal: 30 s). Restabelecida automaticamente.",
+      data: h(14),
+      resolvido: false,
+    },
+    {
+      id: "a4",
+      tipo: "ajuda",
+      severidade: "media",
+      titulo: "Pedido de ajuda de paciente",
+      descricao: "José F. pediu ajuda sobre um encaminhamento de Ortopedia.",
+      data: h(26),
+      resolvido: false,
+    },
   ];
   const atividades: Atividade[] = [
-    { id: "t1", texto: "Vaga de Ortopedia da UBS Centro redistribuída para Rosa M. em 4 min", data: h(0.3) },
+    {
+      id: "t1",
+      texto: "Vaga de Ortopedia da UBS Centro redistribuída para Rosa M. em 4 min",
+      data: h(0.3),
+    },
     { id: "t2", texto: "12 pacientes confirmaram presença por WhatsApp", data: h(1) },
     { id: "t3", texto: "UBS Palha abriu 4 vagas extras de Clínico Geral", data: h(2.5) },
     { id: "t4", texto: "Central de Regulação autorizou 18 encaminhamentos", data: h(4) },
     { id: "t5", texto: "Sincronização com o e-SUS Regulação concluída", data: h(5) },
   ];
   const abertos = encs.filter((e) => e.etapaAtual !== "realizado" && !e.cancelado).length;
-  return { pacientes, encaminhamentos: encs, ofertas, notificacoes, alertas, atividades, baseFila: 1248 - abertos };
+  return {
+    pacientes,
+    encaminhamentos: encs,
+    ofertas,
+    notificacoes,
+    alertas,
+    atividades,
+    baseFila: 1248 - abertos,
+  };
 }
 
 /** Lista de espera de um serviço: ordem por prioridade, depois data de criação. */
 export function filaDeEspera(encs: Encaminhamento[], servicoId: string) {
   return encs
-    .filter((e) => e.servicoId === servicoId && !e.cancelado && ["solicitado", "em_analise", "autorizado"].includes(e.etapaAtual))
-    .sort((a, b) => PRIORIDADE_PESO[a.prioridade] - PRIORIDADE_PESO[b.prioridade] || a.criadoEm.localeCompare(b.criadoEm));
+    .filter(
+      (e) =>
+        e.servicoId === servicoId &&
+        !e.cancelado &&
+        ["solicitado", "em_analise", "autorizado"].includes(e.etapaAtual),
+    )
+    .sort(
+      (a, b) =>
+        PRIORIDADE_PESO[a.prioridade] - PRIORIDADE_PESO[b.prioridade] ||
+        a.criadoEm.localeCompare(b.criadoEm),
+    );
 }
 
 export function recalcPosicoes(encs: Encaminhamento[]) {
   for (const s of SERVICOS) {
     filaDeEspera(encs, s.id).forEach((e, i) => (e.posicaoFila = i + 1));
   }
-  for (const e of encs) if (!["solicitado", "em_analise", "autorizado"].includes(e.etapaAtual) || e.cancelado) e.posicaoFila = undefined;
+  for (const e of encs)
+    if (!["solicitado", "em_analise", "autorizado"].includes(e.etapaAtual) || e.cancelado)
+      e.posicaoFila = undefined;
 }
 
 // Séries históricas para os gráficos
@@ -307,9 +857,29 @@ export const SEMANAS = [
   { semana: "S4", compareceram: 470, faltas: 37, reaproveitadas: 30 },
 ];
 export const LOGS_ACESSO = [
-  { quando: "Hoje 08:12", usuario: "recepcao.centro", acao: "Consultou encaminhamento FZ-2026-004703", ip: "10.0.2.14" },
-  { quando: "Hoje 07:58", usuario: "regulacao.adm", acao: "Autorizou 6 encaminhamentos", ip: "10.0.1.3" },
-  { quando: "Ontem 17:40", usuario: "secretaria.saude", acao: "Exportou relatório de demanda (anonimizado)", ip: "10.0.1.8" },
-  { quando: "Ontem 15:02", usuario: "recepcao.palha", acao: "Registrou check-in de paciente", ip: "10.0.4.22" },
+  {
+    quando: "Hoje 08:12",
+    usuario: "recepcao.centro",
+    acao: "Consultou encaminhamento FZ-2026-004703",
+    ip: "10.0.2.14",
+  },
+  {
+    quando: "Hoje 07:58",
+    usuario: "regulacao.adm",
+    acao: "Autorizou 6 encaminhamentos",
+    ip: "10.0.1.3",
+  },
+  {
+    quando: "Ontem 17:40",
+    usuario: "secretaria.saude",
+    acao: "Exportou relatório de demanda (anonimizado)",
+    ip: "10.0.1.8",
+  },
+  {
+    quando: "Ontem 15:02",
+    usuario: "recepcao.palha",
+    acao: "Registrou check-in de paciente",
+    ip: "10.0.4.22",
+  },
   { quando: "Ontem 09:15", usuario: "sistema", acao: "Sincronização e-SUS Regulação", ip: "—" },
 ];
