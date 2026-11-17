@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { addDays } from "date-fns";
 import {
-  gerarDados, recalcPosicoes, filaDeEspera, calcPrazoExcedido, servicoById, ubsById, iso, dia,
+  gerarDados, recalcPosicoes, filaDeEspera, calcPrazoExcedido, servicoById, ubsById, ubsDeReferencia, iso, dia,
   type DadosDemo, type Encaminhamento, type Prioridade, type Canal, type Etapa, type Paciente, type Notificacao,
 } from "@/data/mock";
 import { mascararNome, primeiroNome } from "@/lib/format";
@@ -25,6 +25,8 @@ interface State extends DadosDemo {
   acompanhar: (id: string | null) => void;
   setPrefs: (p: Partial<Prefs>) => void;
   entrarFila: (a: { pacienteId: string; servicoId: string; ubsId: string; reservar: boolean }) => Encaminhamento;
+  /** Paciente confirma uma vaga ofertada pela Central de Vagas (encaminhamento existente). Não é agendamento direto com especialista. */
+  aceitarOferta: (encId: string) => Encaminhamento;
   confirmarPresenca: (encId: string) => void;
   liberarVaga: (encId: string) => void;
   redistribuir: (encId: string) => { nome: string } | null;
@@ -59,7 +61,7 @@ export const WA_INICIAL = (): WaMsg[] => [
   { id: "w0", from: "bot", time: hhmm(), text: "Olá, Maria! 👋 Eu sou o assistente da Saúde de Diamantina. O que você precisa?", options: MENU },
 ];
 export const MENU = [
-  { label: "1️⃣ Ver vagas", value: "vagas" },
+  { label: "1️⃣ Agendar Clínico Geral", value: "vagas" },
   { label: "2️⃣ Meu pedido", value: "pedido" },
   { label: "3️⃣ Confirmar presença", value: "presenca" },
   { label: "4️⃣ Falar com a UBS", value: "ubs" },
@@ -97,12 +99,19 @@ export const useApp = create<State>()(
       acompanhar: (id) => set((s) => ({ sessao: { ...s.sessao, acompanhandoId: id } })),
       setPrefs: (p) => set((s) => ({ prefs: { ...s.prefs, ...p } })),
 
-      entrarFila: ({ pacienteId, servicoId, ubsId, reservar }) => {
+      entrarFila: ({ pacienteId, servicoId, reservar }) => {
         const s = get();
+        const pac = s.pacientes.find((p) => p.id === pacienteId)!;
+        const servico = servicoById(servicoId);
+        if (!servico.agendamentoDireto) {
+          throw new Error("Agendamento direto disponível apenas para o Clínico Geral da UBS de Referência. Especialidades dependem de encaminhamento do médico da UBS.");
+        }
+        // Regra SUS: o paciente só agenda na sua UBS de Referência, definida pelo endereço/CEP.
+        const ubsId = ubsDeReferencia(pac).id;
         const criado = new Date();
         const etapa: Etapa = reservar ? "agendado" : "solicitado";
         const historico = reservar
-          ? (["solicitado", "em_analise", "autorizado", "agendado"] as Etapa[]).map((et) => ({ etapa: et, data: iso(criado), responsavel: et === "solicitado" ? "Pedido pelo FilaZero" : "Reserva automática" }))
+          ? (["solicitado", "em_analise", "autorizado", "agendado"] as Etapa[]).map((et) => ({ etapa: et, data: iso(criado), responsavel: et === "solicitado" ? "Pedido pelo paciente (app)" : "Agendado na UBS de Referência" }))
           : [{ etapa: "solicitado" as Etapa, data: iso(criado), responsavel: "Pedido pelo FilaZero (lista digital)" }];
         const enc: Encaminhamento = {
           id: `e${uid()}`, protocolo: `FZ-2026-00${seqProt++}`, pacienteId, servicoId, ubsOrigemId: ubsId,
@@ -111,7 +120,6 @@ export const useApp = create<State>()(
         };
         const encaminhamentos = [...s.encaminhamentos, enc];
         recalcPosicoes(encaminhamentos);
-        const pac = s.pacientes.find((p) => p.id === pacienteId)!;
         const sv = servicoById(servicoId).nome;
         set({
           encaminhamentos,
@@ -120,6 +128,26 @@ export const useApp = create<State>()(
           atividades: [atv(`${mascararNome(pac.nome)} ${reservar ? "reservou vaga de" : "entrou na lista digital de"} ${sv} (${ubsById(ubsId).nome})`), ...s.atividades],
         });
         return get().encaminhamentos.find((e) => e.id === enc.id)!;
+      },
+
+      aceitarOferta: (encId) => {
+        const s = get();
+        const e = s.encaminhamentos.find((x) => x.id === encId)!;
+        const sv = servicoById(e.servicoId);
+        // Vaga ofertada pela Central de Vagas para um encaminhamento existente — não é escolha do paciente.
+        const ubsId = sv.especialidade ? "centro" : e.ubsOrigemId;
+        const data = dia(addDays(new Date(), 1));
+        const hora = "09:00";
+        set({
+          encaminhamentos: mapEnc(s, encId, (x) => ({
+            ...x, etapaAtual: "agendado", posicaoFila: undefined,
+            historico: [...x.historico, { etapa: "agendado", data: nowIso(), responsavel: "Central de Vagas", nota: "Vaga ofertada pela Central de Vagas e confirmada pelo paciente" }],
+            agendamento: { data, hora, ubsId, status: "pendente" },
+          })),
+          notificacoes: [notif(e.pacienteId, "agendado", "Consulta confirmada 🗓️", `${sv.nome} em ${data.split("-").reverse().join("/")} às ${hora}, ${ubsById(ubsId).nome}. O agendamento foi feito pela Central de Vagas.`), ...s.notificacoes],
+          atividades: [atv(`${mascararNome(s.pacientes.find((p) => p.id === e.pacienteId)!.nome)} confirmou a vaga ofertada pela Central de Vagas (${sv.nome})`), ...s.atividades],
+        });
+        return get().encaminhamentos.find((x) => x.id === encId)!;
       },
 
       confirmarPresenca: (encId) => set((s) => {
@@ -230,7 +258,8 @@ export const useApp = create<State>()(
       marcarLida: (id) => set((s) => ({ notificacoes: s.notificacoes.map((n) => (n.id === id ? { ...n, lida: true } : n)) })),
       marcarTodasLidas: (pid) => set((s) => ({ notificacoes: s.notificacoes.map((n) => (n.pacienteId === pid ? { ...n, lida: true } : n)) })),
       addFamiliar: (cuidadorId, f) => set((s) => {
-        const novo: Paciente = { id: `p${uid()}`, nome: f.nome, idade: f.idade, cns: f.cns, telefone: s.pacientes.find((p) => p.id === cuidadorId)!.telefone, bairro: "Centro", canal: "whatsapp", parentesco: f.parentesco };
+        const titular = s.pacientes.find((p) => p.id === cuidadorId)!;
+        const novo: Paciente = { id: `p${uid()}`, nome: f.nome, idade: f.idade, cns: f.cns, telefone: titular.telefone, bairro: titular.bairro, cep: titular.cep, endereco: titular.endereco, canal: "whatsapp", parentesco: f.parentesco };
         return { pacientes: [...s.pacientes.map((p) => (p.id === cuidadorId ? { ...p, cuidadorDeIds: [...(p.cuidadorDeIds ?? []), novo.id] } : p)), novo] };
       }),
       resolverAlerta: (id) => set((s) => ({ alertas: s.alertas.map((a) => (a.id === id ? { ...a, resolvido: true } : a)) })),
@@ -242,7 +271,7 @@ export const useApp = create<State>()(
       reset: () => set((s) => ({ ...gerarDados(), sessao: s.sessao, reaproveitadasExtra: 0, autoRedistribuir: true, wa: WA_INICIAL(), integracoes: { ...INTEGRACOES_INI } })),
     }),
     {
-      name: "filazero-demo-v1",
+      name: "filazero-demo-v2",
       skipHydration: true,
       partialize: ({ hydrated: _h, ...rest }) => rest as unknown as State,
       onRehydrateStorage: () => () => useApp.setState({ hydrated: true }),

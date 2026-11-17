@@ -16,9 +16,9 @@ export function DemoPanel() {
     const s = useApp.getState();
     s.login("p1");
     navigate({ to: "/paciente/vagas" });
-    toast.info("Maria abre o portal e procura Oftalmologia (esgotada)…");
+    toast.info("Maria abre o portal para agendar o Clínico Geral na sua UBS de Referência…");
     await wait(1500);
-    const e = useApp.getState().entrarFila({ pacienteId: "p1", servicoId: "oftalmo", ubsId: "centro", reservar: false });
+    const e = useApp.getState().entrarFila({ pacienteId: "p1", servicoId: "clinico", ubsId: "centro", reservar: false });
     toast.success(`Maria entrou na lista de espera — protocolo ${e.protocolo}, posição ${e.posicaoFila}`);
     await wait(2200);
     navigate({ to: "/gestao" });
@@ -30,7 +30,7 @@ export function DemoPanel() {
     const s = useApp.getState();
     const alvo = s.encaminhamentos.find((e) => e.agendamento && ["confirmada", "pendente"].includes(e.agendamento.status) && e.pacienteId !== "p1" && e.etapaAtual === "agendado");
     if (!alvo) return toast.error("Nenhuma consulta disponível para o cenário. Restaure os dados.");
-    navigate({ to: "/gestao/faltas" });
+    navigate({ to: "/gestao" });
     const auto = s.autoRedistribuir;
     if (auto) s.toggleAuto();
     await wait(800);
@@ -41,7 +41,7 @@ export function DemoPanel() {
     if (auto) useApp.getState().toggleAuto();
     if (r) toast.success(`Vaga redistribuída · Mensagem enviada por WhatsApp para ${r.nome}`);
     await wait(1500);
-    useApp.getState().waPush({ from: "bot", text: `🎉 Uma vaga abriu para você! Confirme em até 30 min.`, options: [{ label: "✅ Quero a vaga", value: "quero" }, { label: "Não quero", value: "naoquero" }] });
+    useApp.getState().waPush({ from: "bot", text: `🎉 Uma vaga de *Ultrassonografia* foi ofertada pela Central de Vagas! Confirme em até 30 min.`, options: [{ label: "✅ Quero a vaga", value: "quero" }, { label: "Não quero", value: "naoquero" }] });
     toast("Veja a mensagem no simulador de WhatsApp 📱", { action: { label: "Abrir", onClick: () => navigate({ to: "/whatsapp" }) } });
   }
 
@@ -57,7 +57,7 @@ export function DemoPanel() {
     if (e) useApp.getState().pedirAjuda(e.id);
     toast.success("Pedido de ajuda enviado à Secretaria");
     await wait(1800);
-    navigate({ to: "/gestao/alertas" });
+    navigate({ to: "/gestao" });
     toast.error("Novo alerta no painel: encaminhamento parado + pedido de ajuda");
   }
 

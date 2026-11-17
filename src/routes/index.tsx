@@ -8,9 +8,9 @@ import { fmtBRL } from "@/lib/format";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: `${APP.nome} — Chega de madrugar na fila do posto` },
+      { title: `${APP.nome} — Mais agilidade e transparência no atendimento do SUS` },
       { name: "description", content: `${APP.slogan}. ${APP.proposta}` },
-      { property: "og:title", content: `${APP.nome} — Chega de madrugar na fila do posto` },
+      { property: "og:title", content: `${APP.nome} — Mais agilidade e transparência no atendimento do SUS` },
       { property: "og:description", content: APP.proposta },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -27,7 +27,7 @@ const NUMEROS = [
 ];
 
 type C = "s" | "p" | "n";
-const COLS = ["FilaZero", "Meu SUS Digital", "SISREG / e-SUS Regulação", "Apps municipais", "Fila da madrugada"];
+const COLS = ["FilaZero", "Meu SUS Digital", "SISREG / e-SUS Regulação", "Apps municipais", "Fila presencial"];
 const LINHAS: { crit: string; v: [C | null, string][] }[] = [
   { crit: "Foco principal", v: [[null, "Cidadão + gestor"], [null, "Cidadão"], [null, "Gestor e profissionais"], [null, "Cidadão"], [null, "Cidadão"]] },
   { crit: "Transparência de vagas em tempo real", v: [["s", "Sim"], ["p", "Parcial"], ["n", "Só gestores"], ["p", "Parcial"], ["n", "Não"]] },
@@ -53,18 +53,18 @@ function PhoneMock() {
       <div className="mt-2 rounded-2xl bg-brand p-3 text-primary-foreground">
         <p className="text-[11px] opacity-90">Meu próximo atendimento</p>
         <p className="font-bold">Clínico Geral</p>
-        <p className="text-xs opacity-90">UBS Centro · amanhã 14:00</p>
+        <p className="text-xs opacity-90">UBS de Referência · amanhã 14:00</p>
         <div className="mt-2 rounded-xl bg-card py-1.5 text-center text-xs font-bold text-primary">Confirmar presença</div>
       </div>
       <div className="mt-2 space-y-1.5">
-        {[["UBS Centro", "8 vagas", "bg-success"], ["UBS Palha", "2 vagas", "bg-warning"], ["UBS Bom Jesus", "Esgotado", "bg-destructive"]].map(([n, v, c]) => (
+        {[["UBS de Referência", "definida pelo seu CEP", "bg-primary"], ["Clínico Geral", "6 vagas hoje", "bg-success"], ["Cardiologia", "Autorizado", "bg-success"]].map(([n, v, c]) => (
           <div key={n} className="flex items-center justify-between rounded-xl border px-2.5 py-2 text-xs">
             <span className="font-semibold">{n}</span>
             <span className="flex items-center gap-1"><span className={`size-2 rounded-full ${c}`} />{v}</span>
           </div>
         ))}
       </div>
-      <div className="mt-2 flex items-center gap-2 rounded-xl bg-success-soft p-2 text-[11px] text-success"><CheckCircle2 className="size-4" />Cardiologia autorizada</div>
+      <div className="mt-2 flex items-center gap-2 rounded-xl bg-success-soft p-2 text-[11px] text-success"><CheckCircle2 className="size-4" />Acompanhamento digital dos seus encaminhamentos</div>
     </div>
   );
 }
@@ -106,8 +106,8 @@ function Landing() {
             <span className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-sm font-semibold text-primary-deep shadow-soft">
               <span className="size-2 rounded-full bg-success" /> {APP.slogan}
             </span>
-            <h1 className="mt-5 text-4xl font-bold leading-[1.05] md:text-6xl">Chega de madrugar na fila do posto.</h1>
-            <p className="mt-5 max-w-lg text-lg text-muted-foreground">{APP.proposta} Veja as vagas da sua UBS, acompanhe seu encaminhamento e receba avisos pelo WhatsApp.</p>
+            <h1 className="mt-5 text-4xl font-bold leading-[1.05] md:text-6xl">Mais agilidade e transparência no seu atendimento.</h1>
+            <p className="mt-5 max-w-lg text-lg text-muted-foreground">{APP.proposta} Agende o Clínico Geral da sua UBS de Referência e acompanhe seus encaminhamentos pelo WhatsApp.</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild variant="hero" size="xl"><Link to="/paciente"><Users />Sou paciente ou familiar</Link></Button>
               <Button asChild variant="outline" size="xl"><Link to="/gestao"><Building2 />Sou gestor de saúde</Link></Button>
@@ -119,8 +119,9 @@ function Landing() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-20" aria-labelledby="problema">
-        <p className="text-sm font-bold uppercase tracking-widest text-primary">O problema</p>
-        <h2 id="problema" className="mt-2 max-w-2xl text-3xl font-bold md:text-4xl">Fichas acabam em minutos. Encaminhamentos se perdem. Ninguém sabe se há vaga.</h2>
+        <p className="text-sm font-bold uppercase tracking-widest text-primary">Por que modernizar</p>
+        <h2 id="problema" className="mt-2 max-w-2xl text-3xl font-bold md:text-4xl">Tecnologia para organizar a saúde do município.</h2>
+        <p className="mt-3 max-w-2xl text-lg text-muted-foreground">Acompanhamento digital dos seus encaminhamentos, agenda na UBS de Referência e dados em tempo real para a gestão — mais agilidade e transparência para o cidadão e para o município.</p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {NUMEROS.map((n) => (
             <div key={n.v} className="flex flex-col rounded-2xl border bg-card p-6 shadow-soft">
@@ -135,11 +136,11 @@ function Landing() {
       <section id="como" className="bg-card py-20">
         <div className="mx-auto max-w-6xl px-4">
           <p className="text-sm font-bold uppercase tracking-widest text-primary">Como funciona</p>
-          <h2 className="mt-2 text-3xl font-bold md:text-4xl">Três passos, sem sair de casa</h2>
+          <h2 className="mt-2 text-3xl font-bold md:text-4xl">Três passos para modernizar o atendimento</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
-              { I: Search, t: "Veja as vagas de cada UBS", d: "Disponibilidade atualizada em tempo real, com semáforo simples." },
-              { I: ListChecks, t: "Entre na lista e acompanhe", d: "Lista de espera digital e o encaminhamento etapa por etapa." },
+              { I: Search, t: "Agende na sua UBS de Referência", d: "Clínico Geral da unidade do seu endereço/CEP, com disponibilidade atualizada em tempo real." },
+              { I: ListChecks, t: "Acompanhe seus encaminhamentos", d: "Pedidos com especialistas solicitados pelo médico do posto, acompanhados etapa por etapa." },
               { I: BellRing, t: "Receba avisos e confirme", d: "Lembretes por WhatsApp ou SMS. Não pode ir? A vaga vai para outra pessoa." },
             ].map((p, i) => (
               <div key={p.t} className="relative rounded-2xl border bg-background p-6">
@@ -155,8 +156,8 @@ function Landing() {
 
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-20 md:grid-cols-2">
         {[
-          { t: "Para o paciente", I: Moon, cls: "bg-primary-soft", itens: ["Saber se, quando e onde será atendido", "Ver em que etapa está o encaminhamento", "Sem madrugar na porta da UBS", "Um familiar pode acompanhar por você"] },
-          { t: "Para o município", I: Building2, cls: "bg-secondary", itens: ["Fila organizada e transparente", "Menos retrabalho administrativo", "Vagas de faltantes reaproveitadas", "Dados para planejar a oferta", "Resposta à pressão da população e da mídia"] },
+          { t: "Para o paciente", I: Moon, cls: "bg-primary-soft", itens: ["Mais agilidade e transparência no seu atendimento", "Acompanhamento digital dos seus encaminhamentos", "Agendamento do Clínico Geral na sua UBS de Referência", "Um familiar pode acompanhar por você"] },
+          { t: "Para o município", I: Building2, cls: "bg-secondary", itens: ["Fila organizada e transparente", "Menos retrabalho administrativo", "Vagas de faltantes reaproveitadas", "Dados para planejar a oferta", "Dados para gestão, planejamento e prestação de contas"] },
         ].map((c) => (
           <div key={c.t} className={`rounded-3xl p-8 ${c.cls}`}>
             <c.I className="size-8 text-primary-deep" />

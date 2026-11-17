@@ -14,10 +14,10 @@ export type StatusConf =
   | "compareceu"
   | "falta";
 
-export interface UBS { id: string; nome: string; bairro: string; horario: string; distancia: string; telefone: string }
-export interface Servico { id: string; nome: string; tipo: "consulta" | "exame" | "procedimento"; especialidade: boolean }
+export interface UBS { id: string; nome: string; bairro: string; horario: string; distancia: string; telefone: string; ceps: string[]; bairros: string[] }
+export interface Servico { id: string; nome: string; tipo: "consulta" | "exame" | "procedimento"; especialidade: boolean; agendamentoDireto: boolean }
 export interface Oferta { ubsId: string; servicoId: string; cotaDia: number; ocupadasHoje: number; cotaSemana: number; ocupadasSemana: number; profissional: string }
-export interface Paciente { id: string; nome: string; idade: number; cns: string; telefone: string; bairro: string; canal: Canal; cuidadorDeIds?: string[]; parentesco?: string }
+export interface Paciente { id: string; nome: string; idade: number; cns: string; telefone: string; bairro: string; cep: string; endereco: string; canal: Canal; cuidadorDeIds?: string[]; parentesco?: string }
 export interface Agendamento { data: string; hora: string; ubsId: string; status: StatusConf; redistribuidaPara?: string }
 export interface Historico { etapa: Etapa; data: string; responsavel: string; nota?: string }
 export interface Encaminhamento {
@@ -41,7 +41,7 @@ export const ETAPA_LABEL: Record<Etapa, string> = {
 export const ETAPA_FRASE: Record<Etapa, string> = {
   solicitado: "Seu pedido foi feito na UBS e vai seguir para a central de vagas. Normalmente leva até 3 dias.",
   em_analise: "Seu pedido está sendo analisado pela central de vagas. Normalmente leva até 5 dias.",
-  autorizado: "Seu pedido foi aprovado! Agora falta marcar o dia. Normalmente leva até 7 dias.",
+  autorizado: "Seu pedido foi aprovado. O agendamento será feito pela equipe da UBS/Central de Vagas. Normalmente leva até 7 dias.",
   agendado: "Sua consulta está marcada. Confirme sua presença quando receber o aviso.",
   realizado: "Atendimento concluído. Se precisar de retorno, a UBS vai avisar.",
 };
@@ -50,27 +50,41 @@ export const PRIORIDADE_LABEL: Record<Prioridade, string> = { vermelho: "Vermelh
 export const PRIORIDADE_PESO: Record<Prioridade, number> = { vermelho: 0, amarelo: 1, verde: 2, azul: 3 };
 
 export const UBS_LIST: UBS[] = [
-  { id: "centro", nome: "UBS Centro", bairro: "Centro", horario: "07h às 19h", distancia: "1,2 km", telefone: "(38) 3531-0001" },
-  { id: "bomjesus", nome: "UBS Bom Jesus", bairro: "Bom Jesus", horario: "07h às 17h", distancia: "2,8 km", telefone: "(38) 3531-0002" },
-  { id: "riogrande", nome: "UBS Rio Grande", bairro: "Rio Grande", horario: "07h às 17h", distancia: "3,5 km", telefone: "(38) 3531-0003" },
-  { id: "palha", nome: "UBS Palha", bairro: "Palha", horario: "07h às 16h", distancia: "4,1 km", telefone: "(38) 3531-0004" },
-  { id: "vila", nome: "UBS Vila Operária", bairro: "Vila Operária", horario: "07h às 17h", distancia: "2,2 km", telefone: "(38) 3531-0005" },
+  { id: "centro", nome: "UBS Centro", bairro: "Centro", horario: "07h às 19h", distancia: "1,2 km", telefone: "(38) 3531-0001", ceps: ["39300", "39304"], bairros: ["Centro"] },
+  { id: "bomjesus", nome: "UBS Bom Jesus", bairro: "Bom Jesus", horario: "07h às 17h", distancia: "2,8 km", telefone: "(38) 3531-0002", ceps: ["39301"], bairros: ["Bom Jesus"] },
+  { id: "riogrande", nome: "UBS Rio Grande", bairro: "Rio Grande", horario: "07h às 17h", distancia: "3,5 km", telefone: "(38) 3531-0003", ceps: ["39302"], bairros: ["Rio Grande"] },
+  { id: "palha", nome: "UBS Palha", bairro: "Palha", horario: "07h às 16h", distancia: "4,1 km", telefone: "(38) 3531-0004", ceps: ["39303"], bairros: ["Palha"] },
+  { id: "vila", nome: "UBS Vila Operária", bairro: "Vila Operária", horario: "07h às 17h", distancia: "2,2 km", telefone: "(38) 3531-0005", ceps: ["39305"], bairros: ["Vila Operária"] },
 ];
 
 export const SERVICOS: Servico[] = [
-  { id: "clinico", nome: "Clínico Geral", tipo: "consulta", especialidade: false },
-  { id: "pediatria", nome: "Pediatria", tipo: "consulta", especialidade: false },
-  { id: "gineco", nome: "Ginecologia", tipo: "consulta", especialidade: false },
-  { id: "odonto", nome: "Odontologia", tipo: "consulta", especialidade: false },
-  { id: "cardio", nome: "Cardiologia", tipo: "consulta", especialidade: true },
-  { id: "orto", nome: "Ortopedia", tipo: "consulta", especialidade: true },
-  { id: "oftalmo", nome: "Oftalmologia", tipo: "consulta", especialidade: true },
-  { id: "usg", nome: "Ultrassonografia", tipo: "exame", especialidade: true },
-  { id: "sangue", nome: "Exames de sangue", tipo: "exame", especialidade: false },
+  { id: "clinico", nome: "Clínico Geral", tipo: "consulta", especialidade: false, agendamentoDireto: true },
+  { id: "pediatria", nome: "Pediatria", tipo: "consulta", especialidade: false, agendamentoDireto: false },
+  { id: "gineco", nome: "Ginecologia", tipo: "consulta", especialidade: false, agendamentoDireto: false },
+  { id: "odonto", nome: "Odontologia", tipo: "consulta", especialidade: false, agendamentoDireto: false },
+  { id: "cardio", nome: "Cardiologia", tipo: "consulta", especialidade: true, agendamentoDireto: false },
+  { id: "orto", nome: "Ortopedia", tipo: "consulta", especialidade: true, agendamentoDireto: false },
+  { id: "oftalmo", nome: "Oftalmologia", tipo: "consulta", especialidade: true, agendamentoDireto: false },
+  { id: "usg", nome: "Ultrassonografia", tipo: "exame", especialidade: true, agendamentoDireto: false },
+  { id: "sangue", nome: "Exames de sangue", tipo: "exame", especialidade: false, agendamentoDireto: false },
 ];
+
+export const SERVICO_AGENDAMENTO_DIRETO = "clinico";
+/** Serviços que o paciente pode marcar diretamente (atenção básica). Especialidades exigem encaminhamento do médico da UBS. */
+export const SERVICOS_AGENDAMENTO_DIRETO = SERVICOS.filter((s) => s.agendamentoDireto);
 
 export const ubsById = (id: string) => UBS_LIST.find((u) => u.id === id)!;
 export const servicoById = (id: string) => SERVICOS.find((s) => s.id === id)!;
+/**
+ * UBS de Referência: definida automaticamente pelo endereço/CEP do paciente.
+ * Regra do SUS: cada pessoa é vinculada à unidade da sua área de abrangência.
+ */
+export const ubsDeReferencia = (p: Paciente): UBS => {
+  const cep = (p.cep ?? "").replace(/\D/g, "");
+  const porCep = UBS_LIST.find((u) => u.ceps.some((prefixo) => cep.startsWith(prefixo)));
+  if (porCep) return porCep;
+  return UBS_LIST.find((u) => u.bairros.includes(p.bairro)) ?? UBS_LIST[0];
+};
 
 const PROFISSIONAIS = ["Dra. Helena Costa", "Dr. Marcos Pereira", "Dra. Luiza Fernandes", "Dr. Rafael Nunes", "Dra. Beatriz Lima", "Dr. Tiago Moreira"];
 
@@ -132,18 +146,24 @@ export function gerarDados(): DadosDemo {
   const now = new Date();
   const pick = <T,>(a: T[]) => a[Math.floor(r() * a.length)];
   const pacientes: Paciente[] = [
-    { id: "p1", nome: "Maria das Graças Silva", idade: 53, cns: "700 0012 3456 7801", telefone: "(38) 99812-3401", bairro: "Centro", canal: "whatsapp" },
-    { id: "p2", nome: "Carlos Almeida", idade: 41, cns: "700 0098 7654 3202", telefone: "(38) 99745-1102", bairro: "Bom Jesus", canal: "whatsapp", cuidadorDeIds: ["p3"] },
-    { id: "p3", nome: "Aparecida Almeida", idade: 78, cns: "700 0055 1122 3303", telefone: "(38) 99745-1102", bairro: "Bom Jesus", canal: "whatsapp", parentesco: "Mãe" },
+    { id: "p1", nome: "Maria das Graças Silva", idade: 53, cns: "700 0012 3456 7801", telefone: "(38) 99812-3401", bairro: "Centro", cep: "39300-120", endereco: "Rua da Quitanda, 128 — Centro", canal: "whatsapp" },
+    { id: "p2", nome: "Carlos Almeida", idade: 41, cns: "700 0098 7654 3202", telefone: "(38) 99745-1102", bairro: "Bom Jesus", cep: "39301-080", endereco: "Av. Bernardo de Abranches, 450 — Bom Jesus", canal: "whatsapp", cuidadorDeIds: ["p3"] },
+    { id: "p3", nome: "Aparecida Almeida", idade: 78, cns: "700 0055 1122 3303", telefone: "(38) 99745-1102", bairro: "Bom Jesus", cep: "39301-080", endereco: "Av. Bernardo de Abranches, 450 — Bom Jesus", canal: "whatsapp", parentesco: "Mãe" },
   ];
+  const RUAS = ["Rua Direita", "Rua Macau de Baixo", "Rua da Quitanda", "Av. da Torre", "Rua Senhor do Bonfim", "Rua do Rosário"];
+  const cepDaUbs = (ubsId: string) => `${UBS_LIST.find((u) => u.id === ubsId)?.ceps[0] ?? "39300"}-${String(100 + Math.floor(r() * 899))}`;
   for (let i = 4; i <= 40; i++) {
+    const bairro = pick(UBS_LIST).bairro;
+    const ubsGerada = UBS_LIST.find((u) => u.bairros.includes(bairro)) ?? UBS_LIST[0];
     pacientes.push({
       id: `p${i}`,
       nome: `${NOMES[(i * 7) % NOMES.length]} ${pick(SOBRENOMES)} ${pick(SOBRENOMES)}`,
       idade: 18 + Math.floor(r() * 70),
       cns: `700 00${String(10 + i).padStart(2, "0")} ${Math.floor(1000 + r() * 8999)} ${Math.floor(1000 + r() * 8999)}`,
       telefone: `(38) 99${Math.floor(100 + r() * 899)}-${Math.floor(1000 + r() * 8999)}`,
-      bairro: pick(UBS_LIST).bairro,
+      bairro,
+      cep: cepDaUbs(ubsGerada.id),
+      endereco: `${pick(RUAS)}, ${20 + Math.floor(r() * 900)} — ${bairro}`,
       canal: r() > 0.25 ? "whatsapp" : r() > 0.5 ? "sms" : "app",
     });
   }

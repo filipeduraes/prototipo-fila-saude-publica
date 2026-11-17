@@ -39,6 +39,9 @@ function Detalhe() {
         <h1 className="text-2xl">{servicoById(enc.servicoId).nome}</h1>
         <p className="text-muted-foreground">{enc.protocolo} · {ubsById(enc.ubsOrigemId).nome}</p>
         <div className="mt-2"><EtapaBadge etapa={enc.etapaAtual} /></div>
+        {!servicoById(enc.servicoId).agendamentoDireto && (
+          <p className="mt-2 rounded-xl bg-info-soft p-3 text-sm font-semibold text-info">Este encaminhamento é agendado internamente pela Secretaria de Saúde / Central de Vagas. Você apenas acompanha o status aqui.</p>
+        )}
       </div>
 
       {enc.prazoExcedido && (

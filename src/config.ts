@@ -2,7 +2,7 @@
 export const APP = {
   nome: "FilaZero",
   slogan: "UAI para a saúde pública municipal",
-  proposta: "Transparência e controle na gestão de vagas e encaminhamentos do SUS, sem filas de espera.",
+  proposta: "Tecnologia para organizar a saúde do município: mais agilidade e transparência no atendimento do SUS.",
   municipio: "Diamantina – MG",
   orgao: "Secretaria Municipal de Saúde",
   aviso: "Protótipo acadêmico com dados fictícios.",

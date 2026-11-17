@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, MapPin, Clock, Search, ClipboardList, Users, Moon, CheckCircle2, XCircle, Bell, ListOrdered } from "lucide-react";
+import { CalendarDays, MapPin, Clock, Search, ClipboardList, Users, CheckCircle2, XCircle, Bell, ListOrdered, Stethoscope, Sparkles, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useApp, usePacienteAtivo } from "@/store/app";
-import { filaDeEspera, servicoById, ubsById } from "@/data/mock";
+import { filaDeEspera, servicoById, ubsById, ubsDeReferencia } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { fmtDiaSemana, primeiroNome } from "@/lib/format";
@@ -29,6 +29,7 @@ function Inicio() {
     <div className="space-y-5">
       <h1 className="text-2xl">Olá, {primeiroNome(titular.nome)}! 👋</h1>
       {acompanhando && <p className="-mt-3 text-muted-foreground">Vendo os atendimentos de {primeiroNome(ativo.nome)}.</p>}
+      <p className="-mt-3 flex items-center gap-1.5 text-sm text-muted-foreground"><Lock className="size-4 shrink-0" />UBS de Referência: <b className="text-foreground">{ubsDeReferencia(ativo).nome}</b> · definida pelo seu endereço</p>
 
       {aviso && (
         <Link to="/paciente/avisos" className="flex items-center gap-3 rounded-2xl border border-success/30 bg-success-soft p-4 text-success">
@@ -81,8 +82,9 @@ function Inicio() {
 
       <div className="grid gap-3">
         {[
-          { to: "/paciente/vagas", I: Search, t: "Ver vagas disponíveis", e: "🔎" },
-          { to: "/paciente/pedidos", I: ClipboardList, t: "Acompanhar meu pedido", e: "📋" },
+          { to: "/paciente/vagas", I: Search, t: "Agendar Clínico Geral", e: "🩺" },
+          { to: "/paciente/encaminhamentos", I: Stethoscope, t: "Acompanhar encaminhamentos", e: "📋" },
+          { to: "/paciente/pedidos", I: ClipboardList, t: "Acompanhar meu pedido", e: "🔎" },
           { to: "/paciente/familia", I: Users, t: "Acompanhar um familiar", e: "👨‍👩‍👧" },
         ].map((a) => (
           <Link key={a.to} to={a.to} className="flex min-h-16 items-center gap-4 rounded-2xl border bg-card p-4 text-lg font-bold shadow-soft transition-transform hover:-translate-y-0.5">
@@ -92,7 +94,7 @@ function Inicio() {
       </div>
 
       <div className="flex items-center gap-3 rounded-2xl bg-secondary p-4 text-secondary-foreground">
-        <Moon className="size-6 shrink-0" /><p className="font-semibold">Você não precisa mais ir de madrugada à UBS.</p>
+        <Sparkles className="size-6 shrink-0" /><p className="font-semibold">Mais agilidade e transparência no seu atendimento.</p>
       </div>
     </div>
   );

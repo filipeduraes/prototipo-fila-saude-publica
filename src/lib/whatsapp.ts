@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useApp, MENU, type WaMsg } from "@/store/app";
-import { SERVICOS, servicoById, ubsById, ETAPA_LABEL } from "@/data/mock";
+import { servicoById, ubsById, ubsDeReferencia, ETAPA_LABEL } from "@/data/mock";
 import { fmtData } from "@/lib/format";
 
 export const useWaTyping = create<{ typing: boolean }>(() => ({ typing: false }));
@@ -17,31 +17,38 @@ function reply(value: string): Bot[] {
     case "menu":
       return [bot("Como posso ajudar? Escolha uma opção:", MENU)];
     case "vagas":
-      return [bot("Qual atendimento você procura?", ["clinico", "pediatria", "cardio", "oftalmo", "usg", "sangue"].map((id) => ({ label: servicoById(id).nome, value: `esp:${id}` })))];
+      return [bot("Você pode agendar o *Clínico Geral* (Médico de Saúde da Família) na sua UBS de Referência, definida pelo seu endereço/CEP.\n\nConsultas com especialistas são encaminhadas pelo médico da UBS e agendadas pela Secretaria de Saúde / Central de Vagas — acompanhe em *Meus encaminhamentos* no portal.", [{ label: "🩺 Agendar Clínico Geral", value: "esp:clinico" }, voltar])];
     case "esp": {
-      const of = s.ofertas.filter((o) => o.servicoId === a);
-      const linhas = of.map((o) => {
-        const livres = o.cotaDia - o.ocupadasHoje;
-        return `${livres === 0 ? "🔴" : livres <= 3 ? "🟡" : "🟢"} ${ubsById(o.ubsId).nome}: ${livres === 0 ? "esgotado hoje" : `${livres} vaga${livres > 1 ? "s" : ""} hoje`}`;
-      });
-      const comVaga = of.find((o) => o.cotaDia - o.ocupadasHoje > 0);
-      const opts = comVaga
-        ? [{ label: `✅ Reservar na ${ubsById(comVaga.ubsId).nome}`, value: `res:${a}:${comVaga.ubsId}` }, { label: "📝 Entrar na lista de espera", value: `fila:${a}:${of[0].ubsId}` }, voltar]
-        : [{ label: "📝 Sim, entrar na lista", value: `fila:${a}:${of[0].ubsId}` }, voltar];
-      return [bot(`*${servicoById(a).nome}* — vagas agora:\n\n${linhas.join("\n")}`), bot(comVaga ? "Quer reservar uma vaga ou entrar na lista de espera?" : "Não há vagas hoje. Quer entrar na lista de espera?", opts)];
+      // Agendamento direto é restrito ao Clínico Geral da UBS de Referência.
+      if (a !== "clinico") {
+        return [bot(`*${servicoById(a).nome}* não pode ser agendada diretamente.\n\nO pedido é feito pelo médico da sua UBS e o agendamento é realizado pela Secretaria de Saúde / Central de Vagas. Avisaremos por aqui quando a vaga for confirmada.`, [voltar])];
+      }
+      const paciente = s.pacientes.find((p) => p.id === MARIA)!;
+      const ref = ubsDeReferencia(paciente);
+      const o = s.ofertas.find((x) => x.servicoId === "clinico" && x.ubsId === ref.id);
+      const livres = o ? o.cotaDia - o.ocupadasHoje : 0;
+      const linha = `${livres === 0 ? "🔴" : livres <= 3 ? "🟡" : "🟢"} ${ref.nome} (sua UBS de Referência): ${livres === 0 ? "sem vagas hoje" : `${livres} vaga${livres > 1 ? "s" : ""} hoje`}`;
+      const opts = livres > 0
+        ? [{ label: `✅ Agendar na ${ref.nome}`, value: `res:clinico:${ref.id}` }, { label: "📝 Entrar na lista de espera", value: `fila:clinico:${ref.id}` }, voltar]
+        : [{ label: "📝 Entrar na lista de espera", value: `fila:clinico:${ref.id}` }, voltar];
+      return [bot(`*Clínico Geral* — sua UBS de Referência:\n\n${linha}`), bot(livres > 0 ? "Quer agendar agora ou entrar na lista de espera?" : "Não há vagas hoje. Quer entrar na lista de espera?", opts)];
     }
     case "res":
     case "fila": {
-      const e = s.entrarFila({ pacienteId: MARIA, servicoId: a, ubsId: b, reservar: cmd === "res" });
-      return cmd === "res"
-        ? [bot(`✅ Vaga reservada!\n\n📋 Protocolo: *${e.protocolo}*\n🏥 ${ubsById(b).nome}\n🗓️ ${fmtData(e.agendamento!.data)} às ${e.agendamento!.hora}\n\nVou te lembrar um dia antes. Não precisa ir de madrugada!`, [voltar])]
-        : [bot(`📝 Pronto! Você está na lista de espera.\n\n📋 Protocolo: *${e.protocolo}*\n🔢 Posição: *${e.posicaoFila}*\n⏳ Previsão: ${Math.ceil((e.posicaoFila ?? 1) / 6)} a ${Math.ceil((e.posicaoFila ?? 1) / 6) + 6} dias\n\nAvisaremos por aqui. Não precisa ir à UBS.`, [voltar])];
+      try {
+        const e = s.entrarFila({ pacienteId: MARIA, servicoId: a, ubsId: b, reservar: cmd === "res" });
+        return cmd === "res"
+          ? [bot(`✅ Consulta agendada!\n\n📋 Protocolo: *${e.protocolo}*\n🏥 ${ubsById(e.ubsOrigemId).nome} (UBS de Referência)\n🗓️ ${fmtData(e.agendamento!.data)} às ${e.agendamento!.hora}\n\nVou te lembrar na véspera.`, [voltar])]
+          : [bot(`📝 Pronto! Você está na lista de espera.\n\n📋 Protocolo: *${e.protocolo}*\n🔢 Posição: *${e.posicaoFila}*\n⏳ Previsão: ${Math.ceil((e.posicaoFila ?? 1) / 6)} a ${Math.ceil((e.posicaoFila ?? 1) / 6) + 6} dias\n\nAvisaremos por aqui.`, [voltar])];
+      } catch {
+        return [bot("Agendamento direto disponível apenas para o Clínico Geral da sua UBS de Referência. Especialidades dependem de encaminhamento do médico da UBS.", [voltar])];
+      }
     }
     case "pedido": {
       const encs = s.encaminhamentos.filter((e) => e.pacienteId === MARIA && !e.cancelado && e.etapaAtual !== "realizado");
       const emoji: Record<string, string> = { solicitado: "📨", em_analise: "🔎", autorizado: "✅", agendado: "🗓️", realizado: "🏁" };
       const linhas = encs.map((e) => {
-        const prox = e.etapaAtual === "autorizado" ? " → 🗓️ Falta agendar. Previsão: até 7 dias." : e.etapaAtual === "em_analise" ? " → aguardando a central. Até 5 dias." : e.etapaAtual === "agendado" && e.agendamento ? ` → ${fmtData(e.agendamento.data)} às ${e.agendamento.hora}` : "";
+        const prox = e.etapaAtual === "autorizado" ? " → 🗓️ O agendamento será feito pela Central de Vagas. Até 7 dias." : e.etapaAtual === "em_analise" ? " → aguardando a central. Até 5 dias." : e.etapaAtual === "agendado" && e.agendamento ? ` → ${fmtData(e.agendamento.data)} às ${e.agendamento.hora}` : "";
         return `📋 ${servicoById(e.servicoId).nome} — ${emoji[e.etapaAtual]} ${ETAPA_LABEL[e.etapaAtual]}${prox}`;
       });
       return [bot(linhas.length ? `Seus pedidos:\n\n${linhas.join("\n\n")}` : "Você não tem pedidos em aberto.", [voltar])];
@@ -58,13 +65,22 @@ function reply(value: string): Bot[] {
     case "nao": {
       const e = s.encaminhamentos.find((x) => x.id === a)!;
       s.liberarVaga(a);
-      return [bot("Tudo bem! 💚 Liberamos sua vaga para outra pessoa. Quer remarcar?", [{ label: "🔁 Sim, remarcar", value: `fila:${e.servicoId}:${e.agendamento!.ubsId}` }, { label: "Não, obrigado", value: "menu" }])];
+      const remarca = servicoById(e.servicoId).agendamentoDireto
+        ? [{ label: "🔁 Sim, remarcar", value: `fila:${e.servicoId}:${ubsDeReferencia(s.pacientes.find((p) => p.id === MARIA)!).id}` }, { label: "Não, obrigado", value: "menu" }]
+        : [{ label: "Central de Vagas cuida disso", value: "menu" }];
+      return [bot("Tudo bem! 💚 Liberamos sua vaga para outra pessoa. Quer remarcar?", remarca)];
     }
-    case "ubs":
-      return [bot("🏥 UBS Centro\n📞 (38) 3531-0001\n🕖 07h às 19h\n\nUma pessoa da equipe vai responder aqui em horário de atendimento.", [voltar])];
+    case "ubs": {
+      const paciente = s.pacientes.find((p) => p.id === MARIA)!;
+      const ref = ubsDeReferencia(paciente);
+      return [bot(`🏥 *${ref.nome}* (sua UBS de Referência)\n📞 ${ref.telefone}\n🕖 ${ref.horario}\n📍 ${ref.bairro}\n\nUma pessoa da equipe vai responder aqui em horário de atendimento.`, [voltar])];
+    }
     case "quero": {
-      const e = s.entrarFila({ pacienteId: MARIA, servicoId: "oftalmo", ubsId: "centro", reservar: true });
-      return [bot(`🎉 A vaga é sua!\n\n📋 Protocolo: *${e.protocolo}*\n👁️ Oftalmologia — amanhã, UBS Centro.\n\nVou te lembrar no dia anterior.`, [voltar])];
+      // Maria confirma uma vaga ofertada pela Central de Vagas — não é agendamento direto com especialista.
+      const e = s.encaminhamentos.find((x) => x.pacienteId === MARIA && (x.etapaAtual === "em_analise" || x.etapaAtual === "solicitado"));
+      if (!e) return [bot("No momento não há nenhuma vaga ofertada para você. Avisaremos assim que a Central de Vagas disponibilizar uma. 🙂", [voltar])];
+      const ag = s.aceitarOferta(e.id).agendamento!;
+      return [bot(`🎉 A vaga é sua!\n\n📋 Protocolo: *${e.protocolo}*\n🩺 ${servicoById(e.servicoId).nome} — ${fmtData(ag.data)}, ${ag.hora}\n🏥 ${ubsById(ag.ubsId).nome}\n\nAgendamento feito pela Central de Vagas. Vou te lembrar no dia anterior.`, [voltar])];
     }
     case "naoquero":
       return [bot("Sem problemas. Você continua na lista e a vaga vai para a próxima pessoa. 👍", [voltar])];
@@ -96,15 +112,16 @@ export function waSend(label: string, value?: string) {
 
 export function waSimular(tipo: "lembrete" | "vaga" | "autorizado") {
   const { waPush } = useApp.getState();
+  const s = useApp.getState();
   if (tipo === "lembrete") { reply("presenca").forEach(waPush); return; }
   if (tipo === "vaga") {
-    waPush(bot("🎉 Uma vaga de *Oftalmologia* abriu para amanhã 9h na UBS Centro. Você tem 30 min para confirmar.", [{ label: "✅ Quero a vaga", value: "quero" }, { label: "Não quero", value: "naoquero" }]));
+    const e = s.encaminhamentos.find((x) => x.pacienteId === MARIA && (x.etapaAtual === "em_analise" || x.etapaAtual === "solicitado"));
+    const servico = e ? servicoById(e.servicoId).nome : "Ultrassonografia";
+    waPush(bot(`🎉 Uma vaga de *${servico}* foi ofertada pela Central de Vagas para amanhã, 09:00. Você tem 30 min para confirmar.`, [{ label: "✅ Quero a vaga", value: "quero" }, { label: "Não quero", value: "naoquero" }]));
     return;
   }
-  const s = useApp.getState();
   const e = s.encaminhamentos.find((x) => x.pacienteId === MARIA && (x.etapaAtual === "em_analise" || x.etapaAtual === "solicitado"));
   if (e) s.avancar(e.id);
-  waPush(bot(`✅ Boa notícia, Maria! Seu pedido de *${e ? servicoById(e.servicoId).nome : "Ultrassonografia"}* foi autorizado.\n🗓️ Agora falta agendar. Previsão: até 7 dias.`, [{ label: "📋 Ver meus pedidos", value: "pedido" }, voltar]));
+  waPush(bot(`✅ Boa notícia, Maria! Seu pedido de *${e ? servicoById(e.servicoId).nome : "Ultrassonografia"}* foi autorizado.\n🗓️ O agendamento será feito pela Secretaria de Saúde / Central de Vagas. Avisaremos assim que a vaga for confirmada.`, [{ label: "📋 Ver meus pedidos", value: "pedido" }, voltar]));
 }
 
-export const SERVICOS_WA = SERVICOS;

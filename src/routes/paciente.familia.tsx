@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { UserPlus, UserRound, ChevronRight, Users } from "lucide-react";
+import { UserPlus, UserRound, ChevronRight, Users, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useApp, usePacienteAtivo } from "@/store/app";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { isValidDoc, maskDoc } from "@/lib/format";
+import { ubsDeReferencia } from "@/data/mock";
 
 export const Route = createFileRoute("/paciente/familia")({ component: Familia });
 
@@ -53,7 +54,7 @@ function Familia() {
           <button key={p.id} onClick={() => { acompanhar(p.id); toast(`Acompanhando ${p.nome.split(" ")[0]}`); navigate({ to: "/paciente" }); }}
             className="flex w-full items-center gap-4 rounded-2xl border bg-card p-4 text-left shadow-soft transition-transform hover:-translate-y-0.5">
             <span className="grid size-14 place-items-center rounded-full bg-primary-soft text-primary"><UserRound className="size-7" /></span>
-            <span className="flex-1"><span className="block text-lg font-bold">{p.idade >= 60 ? "Dona " : ""}{p.nome.split(" ")[0]} – {p.parentesco?.toLowerCase()}{p.idade ? `, ${p.idade} anos` : ""}</span><span className="text-muted-foreground">{n} pedido{n !== 1 && "s"} em aberto</span></span>
+            <span className="flex-1"><span className="block text-lg font-bold">{p.idade >= 60 ? "Dona " : ""}{p.nome.split(" ")[0]} – {p.parentesco?.toLowerCase()}{p.idade ? `, ${p.idade} anos` : ""}</span><span className="text-muted-foreground">{n} pedido{n !== 1 && "s"} em aberto</span><span className="flex items-center gap-1 text-sm text-muted-foreground"><Lock className="size-3.5" />UBS de Referência: {ubsDeReferencia(p).nome}</span></span>
             <ChevronRight className="size-6 text-muted-foreground" />
           </button>
         );

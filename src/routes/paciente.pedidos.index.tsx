@@ -14,12 +14,15 @@ function Pedidos() {
   const meus = encs.filter((e) => e.pacienteId === ativo.id && !e.cancelado).sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl">Meus pedidos</h1>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-2xl">Meus pedidos</h1>
+        <Link to="/paciente/encaminhamentos" className="shrink-0 text-sm font-semibold text-primary hover:underline">Encaminhamentos de especialistas →</Link>
+      </div>
       {meus.length === 0 && (
         <div className="rounded-2xl border border-dashed p-8 text-center">
           <ClipboardList className="mx-auto size-12 text-muted-foreground" />
           <p className="mt-2 font-semibold">Nenhum pedido ainda</p>
-          <Button asChild className="mt-4" size="lg"><Link to="/paciente/vagas">Ver vagas</Link></Button>
+          <Button asChild className="mt-4" size="lg"><Link to="/paciente/vagas">Agendar Clínico Geral</Link></Button>
         </div>
       )}
       {meus.map((e) => {

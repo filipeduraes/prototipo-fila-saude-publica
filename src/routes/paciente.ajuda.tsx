@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle, Phone, Smartphone, Type, Contrast, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
-import { useApp } from "@/store/app";
+import { useApp, usePacienteAtivo } from "@/store/app";
+import { ubsDeReferencia } from "@/data/mock";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -11,7 +12,8 @@ import type { Canal } from "@/data/mock";
 export const Route = createFileRoute("/paciente/ajuda")({ component: Ajuda });
 
 const FAQ = [
-  ["Preciso ir de madrugada à UBS?", "Não. Você vê as vagas aqui ou no WhatsApp e entra na lista de espera de casa. Avisamos quando chegar sua vez."],
+  ["Como agendo uma consulta na minha UBS?", "Você pode agendar o Clínico Geral (Médico de Saúde da Família) exclusivamente na sua UBS de Referência, definida pelo seu endereço/CEP. O agendamento é feito aqui no portal ou no WhatsApp."],
+  ["Como agendo uma consulta com especialista?", "Consultas com especialistas não são agendadas diretamente. O pedido é feito pelo médico da sua UBS e o agendamento é realizado internamente pela Secretaria de Saúde / Central de Vagas. Acompanhe em \"Meus encaminhamentos\": quando a vaga for confirmada, mostramos data, hora e local."],
   ["E se eu não tiver internet?", "Você pode receber os avisos por SMS. Também pode pedir ajuda na recepção da UBS, que faz o cadastro por você."],
   ["Como confirmo minha presença?", "Um dia antes mandamos um lembrete. É só tocar em \"Sim, vou\" no WhatsApp ou em \"Confirmar presença\" aqui no Início."],
   ["Não vou poder ir. O que faço?", "Toque em \"Não vou poder ir\". Sua vaga vai para outra pessoa e você pode remarcar."],
@@ -19,15 +21,17 @@ const FAQ = [
 ];
 
 function Ajuda() {
+  const { ativo } = usePacienteAtivo();
   const prefs = useApp((s) => s.prefs);
   const setPrefs = useApp((s) => s.setPrefs);
+  const ref = ativo ? ubsDeReferencia(ativo) : null;
   const canais: { v: Canal; l: string; I: typeof Phone }[] = [{ v: "whatsapp", l: "WhatsApp", I: MessageCircle }, { v: "sms", l: "SMS", I: MessageSquare }, { v: "app", l: "Só no app", I: Smartphone }];
   return (
     <div className="space-y-6">
       <h1 className="text-2xl">Ajuda</h1>
       <div className="grid gap-3">
         <Button asChild size="xl" variant="whatsapp"><Link to="/whatsapp"><MessageCircle />Falar pelo WhatsApp</Link></Button>
-        <Button asChild size="xl" variant="outline"><a href="tel:+553835310001"><Phone />Ligar para a UBS</a></Button>
+        {ref && <Button asChild size="xl" variant="outline"><a href={`tel:+55${ref.telefone.replace(/\D/g, "")}`}><Phone />Ligar para a {ref.nome} · {ref.telefone}</a></Button>}
       </div>
 
       <section>

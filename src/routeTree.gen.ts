@@ -16,6 +16,7 @@ import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as PacienteIndexRouteImport } from './routes/paciente.index'
 import { Route as PacienteAjudaRouteImport } from './routes/paciente.ajuda'
 import { Route as PacienteAvisosRouteImport } from './routes/paciente.avisos'
+import { Route as PacienteEncaminhamentosRouteImport } from './routes/paciente.encaminhamentos'
 import { Route as PacienteFamiliaRouteImport } from './routes/paciente.familia'
 import { Route as PacienteVagasRouteImport } from './routes/paciente.vagas'
 import { Route as PacientePedidosIndexRouteImport } from './routes/paciente.pedidos.index'
@@ -56,6 +57,11 @@ const PacienteAvisosRoute = PacienteAvisosRouteImport.update({
   path: '/avisos',
   getParentRoute: () => PacienteRoute,
 } as any)
+const PacienteEncaminhamentosRoute = PacienteEncaminhamentosRouteImport.update({
+  id: '/encaminhamentos',
+  path: '/encaminhamentos',
+  getParentRoute: () => PacienteRoute,
+} as any)
 const PacienteFamiliaRoute = PacienteFamiliaRouteImport.update({
   id: '/familia',
   path: '/familia',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/whatsapp': typeof WhatsappRoute
   '/paciente/ajuda': typeof PacienteAjudaRoute
   '/paciente/avisos': typeof PacienteAvisosRoute
+  '/paciente/encaminhamentos': typeof PacienteEncaminhamentosRoute
   '/paciente/familia': typeof PacienteFamiliaRoute
   '/paciente/vagas': typeof PacienteVagasRoute
   '/paciente/': typeof PacienteIndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/whatsapp': typeof WhatsappRoute
   '/paciente/ajuda': typeof PacienteAjudaRoute
   '/paciente/avisos': typeof PacienteAvisosRoute
+  '/paciente/encaminhamentos': typeof PacienteEncaminhamentosRoute
   '/paciente/familia': typeof PacienteFamiliaRoute
   '/paciente/vagas': typeof PacienteVagasRoute
   '/paciente': typeof PacienteIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/whatsapp': typeof WhatsappRoute
   '/paciente/ajuda': typeof PacienteAjudaRoute
   '/paciente/avisos': typeof PacienteAvisosRoute
+  '/paciente/encaminhamentos': typeof PacienteEncaminhamentosRoute
   '/paciente/familia': typeof PacienteFamiliaRoute
   '/paciente/vagas': typeof PacienteVagasRoute
   '/paciente/': typeof PacienteIndexRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/paciente/ajuda'
     | '/paciente/avisos'
+    | '/paciente/encaminhamentos'
     | '/paciente/familia'
     | '/paciente/vagas'
     | '/paciente/'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/paciente/ajuda'
     | '/paciente/avisos'
+    | '/paciente/encaminhamentos'
     | '/paciente/familia'
     | '/paciente/vagas'
     | '/paciente'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/paciente/ajuda'
     | '/paciente/avisos'
+    | '/paciente/encaminhamentos'
     | '/paciente/familia'
     | '/paciente/vagas'
     | '/paciente/'
@@ -215,6 +227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PacienteAvisosRouteImport
       parentRoute: typeof PacienteRoute
     }
+    '/paciente/encaminhamentos': {
+      id: '/paciente/encaminhamentos'
+      path: '/encaminhamentos'
+      fullPath: '/paciente/encaminhamentos'
+      preLoaderRoute: typeof PacienteEncaminhamentosRouteImport
+      parentRoute: typeof PacienteRoute
+    }
     '/paciente/familia': {
       id: '/paciente/familia'
       path: '/familia'
@@ -249,6 +268,7 @@ declare module '@tanstack/react-router' {
 interface PacienteRouteChildren {
   PacienteAjudaRoute: typeof PacienteAjudaRoute
   PacienteAvisosRoute: typeof PacienteAvisosRoute
+  PacienteEncaminhamentosRoute: typeof PacienteEncaminhamentosRoute
   PacienteFamiliaRoute: typeof PacienteFamiliaRoute
   PacienteVagasRoute: typeof PacienteVagasRoute
   PacienteIndexRoute: typeof PacienteIndexRoute
@@ -259,6 +279,7 @@ interface PacienteRouteChildren {
 const PacienteRouteChildren: PacienteRouteChildren = {
   PacienteAjudaRoute: PacienteAjudaRoute,
   PacienteAvisosRoute: PacienteAvisosRoute,
+  PacienteEncaminhamentosRoute: PacienteEncaminhamentosRoute,
   PacienteFamiliaRoute: PacienteFamiliaRoute,
   PacienteVagasRoute: PacienteVagasRoute,
   PacienteIndexRoute: PacienteIndexRoute,

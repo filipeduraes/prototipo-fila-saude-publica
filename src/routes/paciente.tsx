@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Home, Search, ClipboardList, HelpCircle, Bell, Type, Contrast, LogOut, UserRound, X, ShieldCheck, Loader2 } from "lucide-react";
+import { Home, Search, ClipboardList, HelpCircle, Bell, Type, Contrast, LogOut, UserRound, X, ShieldCheck, Loader2, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
 import { useApp, usePacienteAtivo } from "@/store/app";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,9 @@ export const Route = createFileRoute("/paciente")({
   head: () => ({
     meta: [
       { title: `Portal do Paciente — ${APP.nome}` },
-      { name: "description", content: "Veja vagas das UBS, acompanhe seus pedidos e receba avisos sem madrugar na fila." },
+      { name: "description", content: "Agende o Clínico Geral da sua UBS de Referência e acompanhe seus encaminhamentos pelo WhatsApp." },
       { property: "og:title", content: `Portal do Paciente — ${APP.nome}` },
-      { property: "og:description", content: "Vagas, pedidos e avisos do SUS na palma da mão." },
+      { property: "og:description", content: "Agendamento na sua UBS de Referência e acompanhamento digital dos seus encaminhamentos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -29,7 +29,8 @@ export const Route = createFileRoute("/paciente")({
 
 const NAV = [
   { to: "/paciente", label: "Início", I: Home },
-  { to: "/paciente/vagas", label: "Vagas", I: Search },
+  { to: "/paciente/vagas", label: "Agendar", I: Search },
+  { to: "/paciente/encaminhamentos", label: "Encaminham.", I: Stethoscope, aria: "Meus encaminhamentos" },
   { to: "/paciente/pedidos", label: "Meus pedidos", I: ClipboardList },
   { to: "/paciente/ajuda", label: "Ajuda", I: HelpCircle },
 ] as const;
@@ -106,11 +107,11 @@ function Shell() {
         <div className="animate-in fade-in duration-200"><Outlet /></div>
         <AvisoProtótipo className="mt-8" />
       </main>
-      <nav className="fixed bottom-0 left-1/2 z-40 grid w-full max-w-[440px] -translate-x-1/2 grid-cols-4 border-t bg-card" aria-label="Navegação principal">
+      <nav className="fixed bottom-0 left-1/2 z-40 grid w-full max-w-[440px] -translate-x-1/2 grid-cols-5 border-t bg-card" aria-label="Navegação principal">
         {NAV.map((n) => {
           const active = n.to === "/paciente" ? pathname === "/paciente" || pathname === "/paciente/" : pathname.startsWith(n.to);
           return (
-            <Link key={n.to} to={n.to} className={cn("flex min-h-16 flex-col items-center justify-center gap-0.5 text-xs font-semibold", active ? "text-primary" : "text-muted-foreground")} aria-current={active ? "page" : undefined}>
+            <Link key={n.to} to={n.to} aria-label={"aria" in n ? n.aria : undefined} className={cn("flex min-h-16 flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-semibold", active ? "text-primary" : "text-muted-foreground")} aria-current={active ? "page" : undefined}>
               <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors", active && "bg-primary-soft")}><n.I className="size-6" /></span>
               {n.label}
             </Link>
@@ -154,7 +155,7 @@ function Login() {
       <div className="flex items-center justify-between"><Logo /><A11yButtons /></div>
       <div className="mt-8">
         <h1 className="text-3xl">{step === "dados" ? "Entrar" : "Digite o código"}</h1>
-        <p className="mt-2 text-muted-foreground">{step === "dados" ? "Veja vagas e acompanhe seus pedidos sem ir à UBS." : `Mandamos 6 números para ${tel}.`}</p>
+        <p className="mt-2 text-muted-foreground">{step === "dados" ? "Agende o Clínico Geral da sua UBS de Referência e acompanhe seus encaminhamentos." : `Mandamos 6 números para ${tel}.`}</p>
       </div>
       {step === "dados" ? (
         <form onSubmit={enviar} className="mt-6 space-y-5" noValidate>
